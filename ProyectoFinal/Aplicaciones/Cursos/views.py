@@ -32,3 +32,30 @@ def guardar_usuarios(request):
     )
     messages.success(request,f'Usuario {nombre} creado exitosamente')
     return redirect('/listar-usuarios')
+
+
+def editar_usuarios(request,id):
+    usuarios=Usuario.objects.get(id=id)
+    return render(request,'usuarios/editarUsuarios.html',{'usuarios':usuarios})
+
+def procesar_info_usuarios(request):
+    id=request.POST['id']
+    nombre=request.POST['nombre']
+    apellido=request.POST['apellido']
+    correo=request.POST['correo']
+    telefono=request.POST['telefono']
+    password=request.POST['password']
+    fecha=request.POST['fecha']
+    logo=request.FILES.get('logo')
+    
+    usuario=Usuario.objects.get(id=id)
+    usuario.nombre=nombre
+    usuario.apellido=apellido
+    usuario.correo=correo
+    usuario.telefono=telefono
+    usuario.password_hash=password
+    usuario.fecha_registro=fecha
+    if logo:
+        usuario.logo = logo
+    usuario.save()
+    return redirect('/listar-usuarios')
