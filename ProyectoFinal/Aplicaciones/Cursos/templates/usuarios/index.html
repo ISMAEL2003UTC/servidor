@@ -1,0 +1,97 @@
+{% extends '../plantilla.html' %}
+{% load static %}
+{% block body %}
+<div class="container mt-5">
+
+    <!-- Encabezado -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="m-0"><i class="fas fa-users me-2"></i> Usuarios Registradas</h2>
+        <a href="#" class="btn btn-primary">
+            <i class="fas fa-plus me-1"></i> Nuevo Usuario
+        </a>
+    </div>
+
+    <!-- Tabla de LIbros -->
+    <div class="table-responsive border bg-white" >
+        <table class="table table-hover table-bordered bg-white" id="tbl_destinos">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Correo</th>
+                    <th>Telefono</th>
+                    <th>Fecha de registro</th>
+                    <th>Logo</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for usuario in usuarios %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ usuario.nombre }}</td>
+                    <td>{{ usuario.apellido }}</td>
+                    <td>{{ usuario.correo}}</td>
+                    <td>{{ usuario.telefono}}</td>
+                    <td>{{ usuario.fecha_registro }}</td>
+                    <td>
+                        {% if usuario.logo %}
+                            <img src="{{ usuario.logo.url }}" alt="Logo" class="img-thumbnail" style="max-width: 100px; max-height: 80px;">
+
+                        {% else %}
+                            ninguna
+                        {% endif %}
+                    </td>
+                    
+
+                    <td class="text-nowrap">
+                        <a href="#"  class="btn btn-warning me-1">
+                            <i class="fas fa-edit me-1"></i> Editar
+                        </a>
+                        <a href="#" onclick="confirmarEliminacion('{{ fabricante.id }}', '{{ fabricante.nombre }}', '/eliminar-fabricantes/')" class="btn btn-danger">
+                            <i class="fas fa-trash-alt me-1"></i> Eliminar
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center py-4 text-muted">
+                        <i class="fas fa-exclamation-circle me-2"></i>No hay usuarios registrados
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    let table = new DataTable('#tbl_destinos');
+</script>
+
+
+<!-- Scripts SweetAlert2 -->
+<script>
+function confirmarEliminacion(id, nombre, urlBase) {
+    Swal.fire({
+        title: '¿Estás seguro?',
+        html: `Vas a eliminar al siguiente fabricante <b>${nombre}</b>. Esta acción no se puede deshacer.`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar',
+        backdrop: true,
+        allowOutsideClick: false
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = urlBase + id;
+        }
+    });
+}
+
+
+</script>
+{% endblock%}

@@ -1,0 +1,130 @@
+{% extends '../plantilla.html' %}
+{% load static %}
+{% block body %}
+
+<div class="d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+    <div class="container bg-white p-4 rounded shadow w-50">
+        <h1 class="mb-4 text-center">Nuevo Usuario</h1>
+        <form id="frm_nuevo_usuario" action="#" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label for="nombre" class="form-label">Nombre:</label>
+                <input type="text" name="nombre" id="nombre" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="apellido" class="form-label">Apellido:</label>
+                <input type="text" name="apellido" id="apellido" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="correo" class="form-label">Correo electrónico:</label>
+                <input type="email" name="correo" id="correo" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="password" class="form-label">Contraseña:</label>
+                <input type="password" name="password" id="password" class="form-control" required minlength="6">
+            </div>
+
+            <div class="mb-3">
+                <label for="telefono" class="form-label">Teléfono:</label>
+                <input type="tel" name="telefono" id="telefono" class="form-control" pattern="[0-9]{7,15}" title="Debe tener entre 7 y 15 dígitos">
+            </div>
+
+            <div class="mb-3">
+                <label for="logo" class="form-label">Logotipo (opcional):</label>
+                <input type="file" name="logo" id="logo" class="form-control">
+            </div>
+
+            <div class="d-flex justify-content-center gap-2">
+                <button type="submit" class="btn btn-success">Guardar</button>
+                <a href="/" class="btn btn-outline-danger">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<!-- Validación personalizada -->
+<script>
+$(document).ready(function() {
+    // Validación de tamaño de archivo en bytes
+    $.validator.addMethod('filesize', function(value, element, param) {
+        if (element.files.length === 0) return true;
+        return element.files[0].size <= param;
+    }, 'El archivo es demasiado grande.');
+
+    $("#frm_nuevo_usuario").validate({
+        rules: {
+            nombre: {
+                required: true,
+                minlength: 2,
+                maxlength: 50
+            },
+            apellido: {
+                required: true,
+                minlength: 2,
+                maxlength: 50
+            },
+            correo: {
+                required: true,
+                email: true
+            },
+            password: {
+                required: true,
+                minlength: 6
+            },
+            telefono: {
+                digits: true,
+                minlength: 7,
+                maxlength: 15
+            },
+            logo: {
+                extension: "jpg|jpeg|png",
+                filesize: 2097152  // 2MB
+            }
+        },
+        messages: {
+            nombre: {
+                required: "El nombre es obligatorio",
+                minlength: "Debe tener al menos 2 caracteres",
+                maxlength: "Máximo 50 caracteres"
+            },
+            apellido: {
+                required: "El apellido es obligatorio",
+                minlength: "Debe tener al menos 2 caracteres",
+                maxlength: "Máximo 50 caracteres"
+            },
+            correo: {
+                required: "El correo es obligatorio",
+                email: "Debe ser un correo válido"
+            },
+            password: {
+                required: "La contraseña es obligatoria",
+                minlength: "Mínimo 6 caracteres"
+            },
+            telefono: {
+                digits: "Solo se permiten números",
+                minlength: "Mínimo 7 dígitos",
+                maxlength: "Máximo 15 dígitos"
+            },
+            logo: {
+                extension: "Solo se permiten archivos JPG, JPEG o PNG",
+                filesize: "El archivo debe pesar menos de 2MB"
+            }
+        },
+        errorElement: "div",
+        errorClass: "text-danger",
+        highlight: function(element) {
+            $(element).addClass("is-invalid");
+        },
+        unhighlight: function(element) {
+            $(element).removeClass("is-invalid");
+        }
+    });
+});
+</script>
+{% endblock %}
