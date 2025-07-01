@@ -1,44 +1,67 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 
-
-
-from django.db import models
-from django.core.exceptions import ValidationError
-
-
-# Modelo base para todos los usuarios
 class Usuario(models.Model):
+    ROLES = [
+        ('tutor', 'Tutor'),
+        ('estudiante', 'Estudiante'),
+        ('admin', 'Administrador'),
+    ]
+
     nombre = models.CharField(max_length=100)
     apellido = models.CharField(max_length=100)
     correo = models.EmailField(unique=True)
     telefono = models.CharField(max_length=20, blank=True, null=True)
     password_hash = models.TextField()
     fecha_registro = models.DateTimeField(auto_now_add=True)
-    logo = models.FileField(upload_to='usuarios', null=True, blank=True)  # Opcional
-    
+    logo = models.FileField(upload_to='usuarios', null=True, blank=True)
+    rol = models.CharField(max_length=20, choices=ROLES)
 
     def __str__(self):
-        return f"{self.nombre} {self.apellido}"
+        return f"{self.nombre} {self.apellido} ({self.rol})"
 
+    def clean(self):
+        # Validar que el rol coincida con las relaciones
+        if hasattr(self, 'tutor') and self.rol != 'tutor':
+            raise ValidationError("El rol debe ser 'tutor' si existe relación con Tutor")
+        if hasattr(self, 'estudiante') and self.rol != 'estudiante':
+            raise ValidationError("El rol debe ser 'estudiante' si existe relación con Estudiante")
 
-# Extiende Usuario como Tutor
 class Tutor(models.Model):
-    usuario = models.OneToOneField(Usuario, on_delete=models.CASCADE)
-    documento = models.FileField(upload_to='documentos_tutores', null=True, blank=True)  # subir documento
+    usuario = models.OneToOneField(
+        Usuario, 
+        on_delete=models.CASCADE,
+        limit_choices_to={'rol': 'tutor'}  # Solo permite usuarios con rol tutor
+    )
+    documento = models.FileField(upload_to='documentos_tutores', null=True, blank=True)
 
     def __str__(self):
         return f"Tutor: {self.usuario}"
 
+    def save(self, *args, **kwargs):
+        # Asegurar que el usuario tenga el rol correcto
+        if self.usuario.rol != 'tutor':
+            self.usuario.rol = 'tutor'
+            self.usuario.save()
+        super().save(*args, **kwargs)
 
-# Extiende Usuario como Estudiante
 class Estudiante(models.Model):
-    usuario = models.OneToOneField(Usuario, on_delete=models.CASCADE)
-    documento = models.FileField(upload_to='documentos_estudiantes', null=True, blank=True)  # subir documento
+    usuario = models.OneToOneField(
+        Usuario, 
+        on_delete=models.CASCADE,
+        limit_choices_to={'rol': 'estudiante'}  # Solo permite usuarios con rol estudiante
+    )
+    documento = models.FileField(upload_to='documentos_estudiantes', null=True, blank=True)
 
     def __str__(self):
         return f"Estudiante: {self.usuario}"
 
+    def save(self, *args, **kwargs):
+        # Asegurar que el usuario tenga el rol correcto
+        if self.usuario.rol != 'estudiante':
+            self.usuario.rol = 'estudiante'
+            self.usuario.save()
+        super().save(*args, **kwargs)
 
 class Materia(models.Model):
     nombre = models.CharField(max_length=100)

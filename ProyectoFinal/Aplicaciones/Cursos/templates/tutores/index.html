@@ -5,9 +5,9 @@
 
     <!-- Encabezado -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="m-0"><i class="fas fa-users me-2"></i> Usuarios Registrados</h2>
-        <a href="/crear-usuarios" class="btn btn-primary">
-            <i class="fas fa-plus me-1"></i> Nuevo Usuario
+        <h2 class="m-0"><i class="fas fa-users me-2"></i> Tutores Registrados</h2>
+        <a href="/crear-tutores" class="btn btn-primary">
+            <i class="fas fa-plus me-1"></i> Nuevo Tutor
         </a>
     </div>
 
@@ -21,35 +21,49 @@
                     <th>Apellido</th>
                     <th>Correo</th>
                     <th>Teléfono</th>
-                    <th>Rol</th> <!-- 🔴 Nueva columna -->
+                    <th>Rol</th> 
                     <th>Fecha de registro</th>
                     <th>Logo</th>
+                    <th>Documento</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
-                {% for usuario in usuarios %}
+                {% for tutor in tutores %}
                 <tr>
                     <td>{{ forloop.counter }}</td>
-                    <td>{{ usuario.nombre }}</td>
-                    <td>{{ usuario.apellido }}</td>
-                    <td>{{ usuario.correo }}</td>
-                    <td>{{ usuario.telefono }}</td>
-                    <td>{{ usuario.get_rol_display }}</td> <!-- 🔴 Nueva celda: muestra el rol legible -->
-                    <td>{{ usuario.fecha_registro }}</td>
+                    <td>{{ tutor.usuario.nombre }}</td>
+                    <td>{{ tutor.usuario.apellido }}</td>
+                    <td>{{ tutor.usuario.correo }}</td>
+                    <td>{{ tutor.usuario.telefono }}</td>
+                    <td>{{ tutor.usuario.get_rol_display }}</td> 
+                    <td>{{ tutor.usuario.fecha_registro }}</td>
                     <td>
-                        {% if usuario.logo %}
-                            <img src="{{ usuario.logo.url }}" alt="Logo" class="img-thumbnail" style="max-width: 100px; max-height: 80px;">
+                        {% if tutor.usuario.logo %}
+                            <img src="{{ tutor.usuario.logo.url }}" alt="Logo" class="img-thumbnail" style="max-width: 100px; max-height: 80px;">
                         {% else %}
                             ninguna
                         {% endif %}
                     </td>
-                    
+                    <td>
+                        {% if tutor.documento %}
+                            <div class="text-center">
+                                <i class="fa fa-file-pdf fa-3x text-danger"></i><br>
+                                
+                                <div>
+                                    <small class="text-muted">{{ tutor.documento.name|cut:"documentos_tutores/" }}</small>
+                                </div>
+                                <a href="{{ tutor.documento.url }}" class="btn btn-outline-primary mt-2" download>Descargar PDF</a>
+                            </div>
+                        {% else %}
+                            <span class="text-muted">Ninguno</span>
+                        {% endif %}
+                    </td>
                     <td class="text-nowrap">
-                        <a href="/editar-usuarios/{{usuario.id}}"  class="btn btn-warning me-1">
+                        <a href="/editar-tutores/{{tutor.usuario.id}}"  class="btn btn-warning me-1">
                             <i class="fas fa-edit me-1"></i> Editar
                         </a>
-                        <a href="#" onclick="confirmarEliminacion('{{ usuario.id }}', '{{ usuario.nombre }}', '/eliminar-usuarios/')" class="btn btn-danger">
+                        <a href="#" onclick="confirmarEliminacion('{{ tutor.usuario.id }}', '{{ usuario.nombre }}', '/eliminar-usuarios/')" class="btn btn-danger">
                             <i class="fas fa-trash-alt me-1"></i> Eliminar
                         </a>
                     </td>

@@ -5,7 +5,14 @@ urlpatterns = [
     path('listar-usuarios',views.listar_usuarios),
     path('crear-usuarios',views.crear_usuarios),
     path('guardar-usuarios',views.guardar_usuarios),
-    #path('eliminar-usuarios/<id>',views.eliminar_usuarios),
+    path('eliminar-usuarios/<id>',views.eliminar_usuarios),
     path('editar-usuarios/<id>',views.editar_usuarios),
-    path('procesar-info-usuarios',views.procesar_info_usuarios)
+    path('procesar-info-usuarios',views.procesar_info_usuarios),
+    #tutores
+    path('listar-tutores',views.listar_tutores),
+    #path('crear-usuarios',views.crear_usuarios),
+    #path('guardar-usuarios',views.guardar_usuarios),
+    #path('eliminar-usuarios/<id>',views.eliminar_usuarios),
+    #path('editar-usuarios/<id>',views.editar_usuarios),
+    #path('procesar-info-usuarios',views.procesar_info_usuarios)
 ]

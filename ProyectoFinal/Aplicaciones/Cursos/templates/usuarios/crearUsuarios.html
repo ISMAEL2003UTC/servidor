@@ -33,10 +33,20 @@
                 <input type="password" name="password" id="password" class="form-control" required minlength="6">
             </div>
 
+            <!-- Campo Rol -->
+            <div class="mb-3">
+                <label for="rol" class="form-label">Rol:</label>
+                <select name="rol" id="rol" class="form-select" required>
+                    <option value="" selected disabled>Seleccione un rol</option>
+                    <option value="tutor">Tutor</option>
+                    <option value="estudiante">Estudiante</option>
+                    <option value="admin">Administrador</option>
+                </select>
+            </div>
+
             <div class="mb-3">
                 <label for="fecha" class="form-label">Fecha De Registro:</label>
                 <input type="datetime-local" name="fecha" id="fecha" class="form-control">
-
             </div>
 
             <div class="mb-3">
@@ -86,6 +96,9 @@ $(document).ready(function() {
                 minlength: 7,
                 maxlength: 15
             },
+            rol: {
+                required: true
+            },
             logo: {
                 extension: "jpg|jpeg|png",
                 filesize: 2097152  // 2MB
@@ -114,6 +127,9 @@ $(document).ready(function() {
                 digits: "Solo se permiten números",
                 minlength: "Mínimo 7 dígitos",
                 maxlength: "Máximo 15 dígitos"
+            },
+            rol: {
+                required: "Debe seleccionar un rol"
             },
             logo: {
                 extension: "Solo se permiten archivos JPG, JPEG o PNG",

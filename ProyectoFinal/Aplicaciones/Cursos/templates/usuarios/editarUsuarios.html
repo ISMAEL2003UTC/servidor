@@ -8,6 +8,7 @@
         <form id="frm_nuevo_usuario" action="/procesar-info-usuarios" method="post" enctype="multipart/form-data">
             {% csrf_token %}
             <input type="hidden" value="{{usuarios.id}}" name="id">
+
             <div class="mb-3">
                 <label for="nombre" class="form-label">Nombre:</label>
                 <input type="text" name="nombre" id="nombre" value="{{usuarios.nombre}}" class="form-control" required>
@@ -15,17 +16,17 @@
 
             <div class="mb-3">
                 <label for="apellido" class="form-label">Apellido:</label>
-                <input type="text" name="apellido" id="apellido" value="{{usuarios.apellido}}"  class="form-control" required>
+                <input type="text" name="apellido" id="apellido" value="{{usuarios.apellido}}" class="form-control" required>
             </div>
 
             <div class="mb-3">
                 <label for="correo" class="form-label">Correo electrónico:</label>
-                <input type="email" name="correo" id="correo" value="{{usuarios.correo}}"  class="form-control" required>
+                <input type="email" name="correo" id="correo" value="{{usuarios.correo}}" class="form-control" required>
             </div>
-            
+
             <div class="mb-3">
                 <label for="telefono" class="form-label">Teléfono:</label>
-                <input type="tel" name="telefono" id="telefono"  value="{{usuarios.telefono}}" class="form-control" required title="Debe tener entre 7 y 15 dígitos">
+                <input type="tel" name="telefono" id="telefono" value="{{usuarios.telefono}}" class="form-control" required title="Debe tener entre 7 y 15 dígitos">
             </div>
 
             <div class="mb-3">
@@ -36,7 +37,15 @@
                 </div>
             </div>
 
-            
+            <!-- Campo Rol -->
+            <div class="mb-3">
+                <label for="rol" class="form-label">Rol:</label>
+                <select name="rol" id="rol" class="form-select" required>
+                    <option value="tutor" {% if usuarios.rol == 'tutor' %}selected{% endif %}>Tutor</option>
+                    <option value="estudiante" {% if usuarios.rol == 'estudiante' %}selected{% endif %}>Estudiante</option>
+                    <option value="admin" {% if usuarios.rol == 'admin' %}selected{% endif %}>Administrador</option>
+                </select>
+            </div>
 
             <div class="mb-3">
                 <label for="fecha" class="form-label">Fecha De Registro:</label>
@@ -48,7 +57,7 @@
                 <div class="d-flex align-items-center gap-3">
                     {% if usuarios.logo %}
                         <img src="{{ usuarios.logo.url }}" alt="Logo actual"
-                            style="max-height: 100px; width: auto; border: 1px solid #ddd; padding: 2px;">
+                             style="max-height: 100px; width: auto; border: 1px solid #ddd; padding: 2px;">
                     {% else %}
                         <div class="text-muted">No hay logo actual.</div>
                     {% endif %}
@@ -67,7 +76,6 @@
 <!-- Validación personalizada -->
 <script>
 $(document).ready(function() {
-    // Validación de tamaño de archivo en bytes
     $.validator.addMethod('filesize', function(value, element, param) {
         if (element.files.length === 0) return true;
         return element.files[0].size <= param;
@@ -98,9 +106,12 @@ $(document).ready(function() {
                 minlength: 7,
                 maxlength: 15
             },
+            rol: {
+                required: true
+            },
             logo: {
                 extension: "jpg|jpeg|png",
-                filesize: 2097152  // 2MB
+                filesize: 2097152
             }
         },
         messages: {
@@ -127,6 +138,9 @@ $(document).ready(function() {
                 minlength: "Mínimo 7 dígitos",
                 maxlength: "Máximo 15 dígitos"
             },
+            rol: {
+                required: "Debe seleccionar un rol"
+            },
             logo: {
                 extension: "Solo se permiten archivos JPG, JPEG o PNG",
                 filesize: "El archivo debe pesar menos de 2MB"
@@ -143,10 +157,12 @@ $(document).ready(function() {
     });
 });
 </script>
+
 <script>
 function mostrarOcultarPassword() {
     const passwordInput = document.getElementById("password");
     passwordInput.type = passwordInput.type === "password" ? "text" : "password";
 }
 </script>
+
 {% endblock %}

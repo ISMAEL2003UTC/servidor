@@ -1,0 +1,122 @@
+{% extends "plantilla.html" %}
+{% load static %}
+
+{% block body %}
+<style>
+  .welcome-container {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: #f9fafb;
+    border-radius: 12px;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+  }
+  .welcome-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  .welcome-header h1 {
+    font-weight: 700;
+    color: #33475b;
+  }
+  .role-badge {
+    display: inline-block;
+    padding: 0.3rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+    margin-top: 0.5rem;
+    font-size: 1.1rem;
+    color: #fff;
+  }
+  .role-tutor {
+    background-color: #4f46e5; /* Indigo */
+  }
+  .role-estudiante {
+    background-color: #10b981; /* Green */
+  }
+  .role-usuario {
+    background-color: #f59e0b; /* Amber */
+  }
+  .materias-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(250px,1fr));
+    gap: 1.5rem;
+  }
+  .materia-card {
+    background: white;
+    border-radius: 10px;
+    padding: 1rem;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.07);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: transform 0.2s ease;
+  }
+  .materia-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.12);
+  }
+  .materia-logo {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    object-fit: cover;
+    background: #e0e7ff; /* light indigo bg fallback */
+    flex-shrink: 0;
+  }
+  .materia-info strong {
+    font-size: 1.1rem;
+    color: #1e293b;
+  }
+  .materia-info small {
+    color: #64748b;
+  }
+  .no-materias {
+    text-align: center;
+    font-style: italic;
+    color: #94a3b8;
+    margin-top: 2rem;
+  }
+</style>
+
+<div class="welcome-container">
+  <div class="welcome-header">
+    <h1>¡Hola, {{ usuario.nombre }}!</h1>
+    <p>Bienvenido al sistema de gestión de cursos académicos.</p>
+
+    {% if rol == "tutor" %}
+      <span class="role-badge role-tutor"><i class="fas fa-chalkboard-teacher"></i> Tutor</span>
+    {% elif rol == "estudiante" %}
+      <span class="role-badge role-estudiante"><i class="fas fa-user-graduate"></i> Estudiante</span>
+    {% else %}
+      <span class="role-badge role-usuario"><i class="fas fa-user"></i> Usuario</span>
+    {% endif %}
+  </div>
+
+  <section>
+    <h2 style="color:#33475b; margin-bottom:1rem;">Materias Disponibles</h2>
+
+    {% if materias %}
+      <div class="materias-grid">
+        {% for materia in materias %}
+          <div class="materia-card">
+            {% if materia.logo %}
+              <img src="{{ materia.logo.url }}" alt="{{ materia.nombre }}" class="materia-logo" />
+            {% else %}
+              <div class="materia-logo d-flex justify-content-center align-items-center">
+                <i class="fas fa-book-reader fa-2x text-indigo-300"></i>
+              </div>
+            {% endif %}
+            <div class="materia-info">
+              <strong>{{ materia.nombre }}</strong><br>
+              <small>{{ materia.descripcion|default:"Descripción no disponible" }}</small>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="no-materias">No hay materias registradas aún.</p>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}
