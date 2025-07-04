@@ -245,3 +245,10 @@ def procesar_info_estudiantes(request):
         estudiante.save()
 
     return redirect('/listar-estudiantes')
+
+def listar_materias(request):
+    materias=Materia.objects.all()
+    return render(request,'materias/index.html',{'materias':materias})
+
+def crear_materias(request):
+    return render(request,'materias/crearMaterias.html')

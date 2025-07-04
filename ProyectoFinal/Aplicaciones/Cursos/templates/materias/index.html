@@ -1,0 +1,100 @@
+{% extends '../plantilla.html' %}
+{% load static %}
+{% block body %}
+<div class="container mt-5">
+
+    <!-- Encabezado -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="m-0"><i class="fas fa-users me-2"></i> Materias Registradas</h2>
+        <a href="/crear-materias" class="btn btn-primary">
+            <i class="fas fa-plus me-1"></i> Nueva Materia
+        </a>
+    </div>
+
+    <!-- Tabla de Usuarios -->
+    <div class="table-responsive border bg-white">
+        <table class="table table-hover table-bordered bg-white" id="tbl_destinos">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Nombre</th>
+                    <th>Descripcion</th>
+                    <th>Logo</th>
+                    <th>Documento</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for materia in materias %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ materia.nombre }}</td>
+                    <td>{{ materia.descripcion }}</td>
+                    <td>
+                        {% if materia.logo %}
+                            <img src="{{ materia.logo.url }}" alt="Logo" class="img-thumbnail" style="max-width: 100px; max-height: 80px;">
+                        {% else %}
+                            ninguna
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if materia.documento %}
+                            <div class="text-center">
+                                <i class="fa fa-file-pdf fa-3x text-danger"></i><br>
+                                
+                                <div>
+                                    <small class="text-muted">{{ materia.documento.name|cut:"documentos_materias/" }}</small>
+                                </div>
+                                <a href="{{ materia.documento.url }}" class="btn btn-outline-primary mt-2" download>Descargar PDF</a>
+                            </div>
+                        {% else %}
+                            <span class="text-muted">Ninguno</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-nowrap">
+                        <a href="/editar-materias/{{materia.id}}"  class="btn btn-warning me-1">
+                            <i class="fas fa-edit me-1"></i> Editar
+                        </a>
+                        <a href="#" onclick="confirmarEliminacion('{{ materia.id }}', '{{ materia.nombre }}', '/eliminar-materias/')" class="btn btn-danger">
+                            <i class="fas fa-trash-alt me-1"></i> Eliminar
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="9" class="text-center py-4 text-muted">
+                        <i class="fas fa-exclamation-circle me-2"></i>No hay usuarios registrados
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    let table = new DataTable('#tbl_destinos');
+</script>
+
+<!-- Scripts SweetAlert2 -->
+<script>
+function confirmarEliminacion(id, nombre, urlBase) {
+    Swal.fire({
+        title: '¿Estás seguro?',
+        html: `Vas a eliminar la siguiente materia  <b>${nombre}</b>. Esta acción no se puede deshacer.`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar',
+        backdrop: true,
+        allowOutsideClick: false
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = urlBase + id;
+        }
+    });
+}
+</script>
+{% endblock %}

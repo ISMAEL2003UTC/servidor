@@ -22,5 +22,12 @@ urlpatterns = [
     path('guardar-estudiantes',views.guardar_estudiantes),
     path('eliminar-estudiantes/<id>',views.eliminar_estudiantes),
     path('editar-estudiantes/<id>',views.editar_estudiantes),
-    path('procesar-info-estudiantes',views.procesar_info_estudiantes)
+    path('procesar-info-estudiantes',views.procesar_info_estudiantes),
+    #materias
+    path('listar-materias',views.listar_materias),
+    path('crear-materias',views.crear_materias),
+    #path('guardar-materias',views.guardar_materias),
+    #path('eliminar-materias/<id>',views.eliminar_materias),
+    #path('editar-materias/<id>',views.editar_materias),
+    #path('procesar-info-materias',views.procesar_info_materias)
 ]
