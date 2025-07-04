@@ -20,7 +20,7 @@ urlpatterns = [
     path('listar-estudiantes',views.listar_estudiantes),
     path('crear-estudiantes',views.crear_estudiantes),
     path('guardar-estudiantes',views.guardar_estudiantes),
-    #path('eliminar-usuarios/<id>',views.eliminar_usuarios),
-    #path('editar-usuarios/<id>',views.editar_usuarios),
-    #path('procesar-info-usuarios',views.procesar_info_usuarios)
+    path('eliminar-estudiantes/<id>',views.eliminar_estudiantes),
+    path('editar-estudiantes/<id>',views.editar_estudiantes),
+    path('procesar-info-estudiantes',views.procesar_info_estudiantes)
 ]

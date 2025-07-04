@@ -153,7 +153,7 @@ def guardar_tutores(request):
             messages.error(request, f'Error al crear tutor: {str(e)}')
             return redirect('/crear-tutores')
     
-    return render(request, 'tutores/crear.html')
+    return render(request, 'tutores/crearTutores.html')
 
 #estudiantes
 
@@ -165,4 +165,31 @@ def crear_estudiantes(request):
     return render(request,'estudiantes/crearEstudiantes.html')
 
 def guardar_estudiantes(request):
-    pass
+    if request.method == 'POST':
+        try:
+            # Crear usuario primero
+            usuario = Usuario.objects.create(
+                nombre=request.POST['nombre'],
+                apellido=request.POST['apellido'],
+                correo=request.POST['correo'],
+                telefono=request.POST['telefono'],
+                password_hash=request.POST['password'],
+                fecha_registro=request.POST['fecha'],
+                logo=request.FILES.get('logo'),
+                rol='tutor'  # Rol fijo para tutores
+            )
+            
+            # Crear el tutor asociado
+            estudiante = Estudiante.objects.create(
+                usuario=usuario,
+                documento=request.FILES.get('documento')
+            )
+            
+            messages.success(request, f'estudiante {usuario.nombre} creado exitosamente')
+            return redirect('/listar-estudiantes')
+            
+        except Exception as e:
+            messages.error(request, f'Error al crear estudiante: {str(e)}')
+            return redirect('/crear-estudiantes')
+    
+    return render(request, 'estudiantes/crearEstudiantes.html')
