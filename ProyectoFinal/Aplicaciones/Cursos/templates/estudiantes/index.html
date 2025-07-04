@@ -5,9 +5,9 @@
 
     <!-- Encabezado -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="m-0"><i class="fas fa-users me-2"></i>  Tutores Registrados</h2>
-        <a href="/crear-tutores" class="btn btn-primary">
-            <i class="fas fa-plus me-1"></i> Nuevo Tutor
+        <h2 class="m-0"><i class="fas fa-users me-2"></i> Estudiantes Registrados</h2>
+        <a href="/crear-estudiantes" class="btn btn-primary">
+            <i class="fas fa-plus me-1"></i> Nuevo Estudiante
         </a>
     </div>
 
@@ -29,41 +29,41 @@
                 </tr>
             </thead>
             <tbody>
-                {% for tutor in tutores %}
+                {% for estudiante in estudiantes %}
                 <tr>
                     <td>{{ forloop.counter }}</td>
-                    <td>{{ tutor.usuario.nombre }}</td>
-                    <td>{{ tutor.usuario.apellido }}</td>
-                    <td>{{ tutor.usuario.correo }}</td>
-                    <td>{{ tutor.usuario.telefono }}</td>
-                    <td>{{ tutor.usuario.get_rol_display }}</td> 
-                    <td>{{ tutor.usuario.fecha_registro }}</td>
+                    <td>{{ estudiante.usuario.nombre }}</td>
+                    <td>{{ estudiante.usuario.apellido }}</td>
+                    <td>{{ estudiante.usuario.correo }}</td>
+                    <td>{{ estudiante.usuario.telefono }}</td>
+                    <td>{{ estudiante.usuario.get_rol_display }}</td> 
+                    <td>{{ estudiante.usuario.fecha_registro }}</td>
                     <td>
-                        {% if tutor.usuario.logo %}
-                            <img src="{{ tutor.usuario.logo.url }}" alt="Logo" class="img-thumbnail" style="max-width: 100px; max-height: 80px;">
+                        {% if estudiante.usuario.logo %}
+                            <img src="{{ estudiante.usuario.logo.url }}" alt="Logo" class="img-thumbnail" style="max-width: 100px; max-height: 80px;">
                         {% else %}
                             ninguna
                         {% endif %}
                     </td>
                     <td>
-                        {% if tutor.documento %}
+                        {% if estudiante.documento %}
                             <div class="text-center">
                                 <i class="fa fa-file-pdf fa-3x text-danger"></i><br>
                                 
                                 <div>
-                                    <small class="text-muted">{{ tutor.documento.name|cut:"documentos_tutores/" }}</small>
+                                    <small class="text-muted">{{ estudiante.documento.name|cut:"documentos_estudiantes/" }}</small>
                                 </div>
-                                <a href="{{ tutor.documento.url }}" class="btn btn-outline-primary mt-2" download>Descargar PDF</a>
+                                <a href="{{ estudiante.documento.url }}" class="btn btn-outline-primary mt-2" download>Descargar PDF</a>
                             </div>
                         {% else %}
                             <span class="text-muted">Ninguno</span>
                         {% endif %}
                     </td>
                     <td class="text-nowrap">
-                        <a href="/editar-tutores/{{tutor.usuario.id}}"  class="btn btn-warning me-1">
+                        <a href="/editar-estudiantes/{{estudiante.usuario.id}}"  class="btn btn-warning me-1">
                             <i class="fas fa-edit me-1"></i> Editar
                         </a>
-                        <a href="#" onclick="confirmarEliminacion('{{ tutor.usuario.id }}', '{{ usuario.nombre }}', '/eliminar-usuarios/')" class="btn btn-danger">
+                        <a href="#" onclick="confirmarEliminacion('{{ estudiante.usuario.id }}', '{{ estudiante.nombre }}', '/eliminar-estudiantes/')" class="btn btn-danger">
                             <i class="fas fa-trash-alt me-1"></i> Eliminar
                         </a>
                     </td>
@@ -89,7 +89,7 @@
 function confirmarEliminacion(id, nombre, urlBase) {
     Swal.fire({
         title: '¿Estás seguro?',
-        html: `Vas a eliminar al siguiente usuario <b>${nombre}</b>. Esta acción no se puede deshacer.`,
+        html: `Vas a eliminar al siguiente estudiante <b>${nombre}</b>. Esta acción no se puede deshacer.`,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#d33',

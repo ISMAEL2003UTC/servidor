@@ -121,3 +121,48 @@ def eliminar_usuarios(request, id):
 def listar_tutores(request):
     tutores=Tutor.objects.select_related('usuario').all()
     return render(request,'tutores/index.html',{'tutores':tutores})
+
+def crear_tutores(request):
+    return render(request,'tutores/crearTutores.html')
+
+def guardar_tutores(request):
+    if request.method == 'POST':
+        try:
+            # Crear usuario primero
+            usuario = Usuario.objects.create(
+                nombre=request.POST['nombre'],
+                apellido=request.POST['apellido'],
+                correo=request.POST['correo'],
+                telefono=request.POST['telefono'],
+                password_hash=request.POST['password'],
+                fecha_registro=request.POST['fecha'],
+                logo=request.FILES.get('logo'),
+                rol='tutor'  # Rol fijo para tutores
+            )
+            
+            # Crear el tutor asociado
+            tutor = Tutor.objects.create(
+                usuario=usuario,
+                documento=request.FILES.get('documento')
+            )
+            
+            messages.success(request, f'Tutor {usuario.nombre} creado exitosamente')
+            return redirect('/listar-tutores')
+            
+        except Exception as e:
+            messages.error(request, f'Error al crear tutor: {str(e)}')
+            return redirect('/crear-tutores')
+    
+    return render(request, 'tutores/crear.html')
+
+#estudiantes
+
+def listar_estudiantes(request):
+    estudiantes=Estudiante.objects.select_related('usuario').all()
+    return render(request, 'estudiantes/index.html', {'estudiantes': estudiantes})
+
+def crear_estudiantes(request):
+    return render(request,'estudiantes/crearEstudiantes.html')
+
+def guardar_estudiantes(request):
+    pass
