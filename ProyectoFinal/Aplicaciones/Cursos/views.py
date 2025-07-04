@@ -193,3 +193,19 @@ def guardar_estudiantes(request):
             return redirect('/crear-estudiantes')
     
     return render(request, 'estudiantes/crearEstudiantes.html')
+def eliminar_estudiantes(request,id):
+    usuario = get_object_or_404(Usuario, id=id, rol='estudiante')
+    nombre=usuario.nombre
+    try:
+        estudiante=Estudiante.objects.get(usuario=usuario)
+        estudiante.delete()
+    except Estudiante.DoesNotExist:
+        pass
+    usuario.delete()
+    messages.success(request,f'El estudiante{nombre} ha sido eliminado correctamente')
+    return redirect('/listar-usuarios')
+
+def editar_estudiantes(request,id):
+    pass
+def procesar_info_estudiantes(request):
+    pass
