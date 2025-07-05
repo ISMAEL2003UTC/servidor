@@ -252,3 +252,36 @@ def listar_materias(request):
 
 def crear_materias(request):
     return render(request,'materias/crearMaterias.html')
+
+def guardar_materias(request):
+    nombre=request.POST['nombre']
+    descripcion=request.POST['descripcion']
+    logo=request.FILES.get('logo')
+    documento=request.FILES.get('documento')
+    Materia.objects.create(
+        nombre=nombre,
+        descripcion=descripcion,
+        logo=logo,
+        documento=documento
+    )
+    messages.success(request,f'La materia {nombre} ha sido creada exitosamente')
+    return redirect('/listar-materias')
+
+def eliminar_usuarios(request, id):
+    usuario = get_object_or_404(Usuario, id=id)
+    nombre = usuario.nombre
+    usuario.delete()
+    messages.success(request, f'Usuario {nombre} eliminado correctamente')
+    return redirect('/listar-usuarios')
+
+def eliminar_materias(request,id):
+    materia=get_object_or_404(Materia,id=id)
+    nombre=materia.nombre
+    materia.delete()
+    messages.success(request,f'la materia {nombre} ha sido eliminada correctamente')
+    return redirect('/listar-materias')
+
+def editar_materias(request,id):
+    pass
+def procesar_info_materias(request):
+    pass

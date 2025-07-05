@@ -26,8 +26,8 @@ urlpatterns = [
     #materias
     path('listar-materias',views.listar_materias),
     path('crear-materias',views.crear_materias),
-    #path('guardar-materias',views.guardar_materias),
-    #path('eliminar-materias/<id>',views.eliminar_materias),
-    #path('editar-materias/<id>',views.editar_materias),
-    #path('procesar-info-materias',views.procesar_info_materias)
+    path('guardar-materias',views.guardar_materias),
+    path('eliminar-materias/<id>',views.eliminar_materias),
+    path('editar-materias/<id>',views.editar_materias),
+    path('procesar-info-materias',views.procesar_info_materias)
 ]
