@@ -24,7 +24,7 @@ def login_view(request):
             elif usuario.rol == 'tutor':
                 return redirect('/listar-tutores')
             else:
-                return redirect('/solicitar-clase')
+                return redirect('/listar-estudiantes')
         except Usuario.DoesNotExist:
             messages.error(request, 'Correo o contraseña incorrectos.')
 
@@ -58,7 +58,15 @@ def recuperar_contrasena(request):
 def home(request):
     return render(request, 'home.html')
 
+# Función para verificar sesión y rol tutor
+def tutor_logueado(request):
+    usuario_id = request.session.get('usuario_id')
+    rol = request.session.get('rol')
+    if usuario_id and rol == 'tutor':
+        return usuario_id
+    return None
 
+#usuarios
 def listar_usuarios(request):
     usuarios = Usuario.objects.all()
     return render(request, 'usuarios/index.html', {'usuarios': usuarios})
@@ -227,7 +235,7 @@ def guardar_estudiantes(request):
                 password_hash=request.POST['password'],
                 fecha_registro=request.POST['fecha'],
                 logo=request.FILES.get('logo'),
-                rol='tutor'  # Rol fijo para tutores
+                rol='estudiante'  # Rol fijo para estudiantes
             )
             
             # Crear el tutor asociado
@@ -409,4 +417,76 @@ def procesar_info_niveles(request):
     return redirect('/listar-niveles')
 
 #Asociar Materia-------------------------------------------------------------------------------------
+
+def listar_tutores_materias(request):
+    usuario_id = tutor_logueado(request)
+    if not usuario_id:
+        messages.error(request, "Debes iniciar sesión como tutor para acceder aquí.")
+        return redirect('/login')
+
+    tutor = get_object_or_404(Tutor, usuario__id=usuario_id)
+    tutor_materias = TutorMateria.objects.filter(tutor=tutor).select_related('materia', 'nivel')
+
+    return render(request, 'tutores_materias/listar_tutores_materias.html', {
+        'tutor_materias': tutor_materias,
+    })
+
+
+
+def crear_tutores_materias(request):
+    usuario_id = tutor_logueado(request)
+    if not usuario_id:
+        messages.error(request, "Debes iniciar sesión como tutor para acceder aquí.")
+        return redirect('/login')
+
+    tutor = get_object_or_404(Tutor, usuario__id=usuario_id)
+    materias = Materia.objects.all()
+    niveles = Nivel.objects.all()
+
+    return render(request, 'tutores_materias/crear_tutores_materias.html', {
+        'materias': materias,
+        'niveles': niveles,
+    })
+
+
+def guardar_tutores_materias(request):
+    if request.method == 'POST':
+        usuario_id = tutor_logueado(request)
+        if not usuario_id:
+            messages.error(request, "Debes iniciar sesión como tutor para realizar esta acción.")
+            return redirect('/login')
+
+        tutor = get_object_or_404(Tutor, usuario__id=usuario_id)
+
+        materia_id = request.POST.get('materia_id')
+        nivel_id = request.POST.get('nivel_id')
+        precio_hora = request.POST.get('precio_hora')
+
+        if not materia_id or not nivel_id or not precio_hora:
+            messages.error(request, "Todos los campos son obligatorios.")
+            return redirect('/crear-tutores-materias')
+
+        # Validar si la combinación ya existe para evitar duplicados
+        existe = TutorMateria.objects.filter(
+            tutor=tutor,
+            materia_id=materia_id,
+            nivel_id=nivel_id
+        ).exists()
+
+        if existe:
+            messages.error(request, "Ya tienes asociada esta materia y nivel.")
+            return redirect('/crear-tutores-materias')
+
+        TutorMateria.objects.create(
+            tutor=tutor,
+            materia_id=materia_id,
+            nivel_id=nivel_id,
+            precio_hora=precio_hora
+        )
+
+        messages.success(request, "Materia y nivel asociados correctamente.")
+        return redirect('/listar-tutores-materias')
+
+    return redirect('/crear-tutores-materias')
+
 

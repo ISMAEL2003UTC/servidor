@@ -21,7 +21,8 @@ urlpatterns = [
     path('guardar-tutores',views.guardar_tutores),
     #path('eliminar-usuarios/<id>',views.eliminar_usuarios),
     #path('editar-usuarios/<id>',views.editar_usuarios),
-    #path('procesar-info-usuarios',views.procesar_info_usuarios)
+    #path('procesar-info-usuarios',views.procesar_info_usuarios),
+    
 
     #estudiantes
     path('listar-estudiantes',views.listar_estudiantes),
@@ -48,7 +49,9 @@ urlpatterns = [
 
     
     # Asociar materias a tutores
-    
+    path('listar-tutores-materias', views.listar_tutores_materias),
+    path('crear-tutores-materias', views.crear_tutores_materias),
+    path('guardar-tutores-materias', views.guardar_tutores_materias),
     
 
 ]
