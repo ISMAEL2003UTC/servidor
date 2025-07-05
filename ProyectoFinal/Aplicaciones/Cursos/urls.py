@@ -1,7 +1,14 @@
 from django.urls import path
 from . import views
 urlpatterns = [
+    #login
+    # login y logout
+    path('login', views.login_view, name='login'),
+    path('logout', views.logout_view, name='logout'),
+    path('recuperar-contrasena', views.recuperar_contrasena, name='recuperar_contrasena'),
+    #home
     path('', views.home),
+    #usuarios
     path('listar-usuarios',views.listar_usuarios),
     path('crear-usuarios',views.crear_usuarios),
     path('guardar-usuarios',views.guardar_usuarios),
@@ -29,5 +36,19 @@ urlpatterns = [
     path('guardar-materias',views.guardar_materias),
     path('eliminar-materias/<id>',views.eliminar_materias),
     path('editar-materias/<id>',views.editar_materias),
-    path('procesar-info-materias',views.procesar_info_materias)
+    path('procesar-info-materias',views.procesar_info_materias),
+
+    #niveles
+    path('listar-niveles',views.listar_niveles),
+    path('crear-niveles',views.crear_niveles),
+    path('guardar-niveles',views.guardar_niveles),
+    path('eliminar-niveles/<id>',views.eliminar_niveles),
+    path('editar-niveles/<id>',views.editar_niveles),
+    path('procesar-info-niveles',views.procesar_info_niveles),
+
+    
+    # Asociar materias a tutores
+    
+    
+
 ]

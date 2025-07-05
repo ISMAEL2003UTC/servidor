@@ -13,7 +13,7 @@
 
     <!-- Tabla de Usuarios -->
     <div class="table-responsive border bg-white">
-        <table class="table table-hover table-bordered bg-white" id="tbl_destinos">
+        <table class="table table-hover table-bordered bg-white" id="tbl_niveles">
             <thead class="table-dark">
                 <tr>
                     <th>#</th>
@@ -51,7 +51,7 @@
 </div>
 
 <script>
-    let table = new DataTable('#tbl_destinos');
+    let table = new DataTable('#tbl_niveles');
 </script>
 
 <!-- Scripts SweetAlert2 -->
@@ -59,7 +59,7 @@
 function confirmarEliminacion(id, nombre, urlBase) {
     Swal.fire({
         title: '¿Estás seguro?',
-        html: `Vas a eliminar la siguiente materia  <b>${nombre}</b>. Esta acción no se puede deshacer.`,
+        html: `Vas a eliminar el siguiente nivel <b>${nombre}</b>. Esta acción no se puede deshacer.`,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#d33',

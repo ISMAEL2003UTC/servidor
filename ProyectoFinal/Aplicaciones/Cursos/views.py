@@ -1,9 +1,59 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 import os
+from django.core.mail import send_mail
 
 from .models import Usuario, Tutor, Estudiante, Materia, Nivel, TutorMateria, Clase, Seguimiento, Pago, Valoracion, Ubicacion, MensajeClase
 
+#login
+
+def login_view(request):
+    if request.method == 'POST':
+        correo = request.POST['correo']
+        clave = request.POST['clave']
+
+        try:
+            usuario = Usuario.objects.get(correo=correo, password_hash=clave)
+
+            request.session['usuario_id'] = usuario.id
+            request.session['rol'] = usuario.rol
+            request.session['nombre'] = usuario.nombre
+
+            if usuario.rol == 'admin':
+                return redirect('/admin-dashboard')
+            elif usuario.rol == 'tutor':
+                return redirect('/listar-tutores')
+            else:
+                return redirect('/solicitar-clase')
+        except Usuario.DoesNotExist:
+            messages.error(request, 'Correo o contraseña incorrectos.')
+
+    return render(request, 'login.html')
+
+
+def logout_view(request):
+    request.session.flush()
+    return redirect('/login')
+
+
+# Simulación recuperación de contraseña
+def recuperar_contrasena(request):
+    if request.method == 'POST':
+        correo = request.POST['correo']
+        try:
+            usuario = Usuario.objects.get(correo=correo)
+            # Simulación: enviar clave (en sistemas reales, se debe enviar enlace temporal o código)
+            send_mail(
+                subject='Recuperación de contraseña',
+                message=f'Tu contraseña es: {usuario.password_hash}',
+                from_email='no-reply@educatec.com',
+                recipient_list=[correo],
+                fail_silently=False
+            )
+            messages.success(request, 'Revisa tu correo electrónico.')
+        except Usuario.DoesNotExist:
+            messages.error(request, 'El correo no está registrado.')
+    return render(request, 'recuperar_contrasena.html')
 
 def home(request):
     return render(request, 'home.html')
@@ -246,6 +296,7 @@ def procesar_info_estudiantes(request):
 
     return redirect('/listar-estudiantes')
 
+#materias ----------------------------------------------------------------
 def listar_materias(request):
     materias=Materia.objects.all()
     return render(request,'materias/index.html',{'materias':materias})
@@ -313,4 +364,49 @@ def procesar_info_materias(request):
     return redirect('/listar-materias')
 
 
+#niveles-----------------------------------------------------
+
+def listar_niveles(request):
+    niveles=Nivel.objects.all()
+    return render(request,'niveles/index.html',{'niveles':niveles})
+
+def crear_niveles(request):
+    return render(request,'niveles/crearNiveles.html')
+
+def guardar_niveles(request):
+    nombre=request.POST['nombre']
+    descripcion=request.POST['descripcion']
+    Nivel.objects.create(
+        nombre=nombre,
+        descripcion=descripcion
+    )
+
+    messages.success(request,f'El nivel {nombre} ha sido creada exitosamente')
+    return redirect('/listar-niveles')
+
+def eliminar_niveles(request, id):
+    nivel = get_object_or_404(Nivel, id=id)
+    nombre = nivel.nombre
+    nivel.delete()
+    messages.success(request, f'Nivel {nombre} eliminado correctamente')
+    return redirect('/listar-niveles')
+
+
+def editar_niveles(request,id):
+    niveles=Nivel.objects.get(id=id)
+    return render(request,'niveles/editarNiveles.html',{'niveles':niveles})
+
+def procesar_info_niveles(request):
+    id=request.POST['id']
+    niveles=Nivel.objects.get(id=id)
+    nombre=request.POST['nombre']
+    descripcion=request.POST['descripcion']
+    niveles.nombre=nombre
+    niveles.descripcion=descripcion
+
+    
+    niveles.save()
+    return redirect('/listar-niveles')
+
+#Asociar Materia-------------------------------------------------------------------------------------
 

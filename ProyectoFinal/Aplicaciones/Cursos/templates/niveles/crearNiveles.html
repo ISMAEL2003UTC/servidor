@@ -1,0 +1,73 @@
+{% extends '../plantilla.html' %}
+{% load static %}
+{% block body %}
+
+<div class="container mt-5">
+    <h2 class="mb-4"><i class="fas fa-user-plus me-2"></i> Crear Nuevo Nivel</h2>
+
+    <form id="formTutor" action="/guardar-niveles" method="POST" enctype="multipart/form-data" class="border p-4 bg-white rounded shadow">
+        {% csrf_token %}
+        
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="nombre" class="form-label">Nombre</label>
+                <input type="text" name="nombre" id="nombre" class="form-control" required>
+            </div>
+            <div class="col-md-6">
+                <label for="descripcion" class="form-label">Descripcion</label>
+                <textarea name="descripcion" id="descripcion" class="form-control"></textarea>
+            </div>
+        </div>
+        
+        <div class="mt-4 text-end">
+            <button type="submit" class="btn btn-success">
+                <i class="fas fa-save me-1"></i> Guardar Nivel
+            </button>
+            <a href="/listar-niveles" class="btn btn-secondary ms-2">
+                <i class="fas fa-arrow-left me-1"></i> Cancelar
+            </a>
+        </div>
+    </form>
+</div>
+
+
+
+<!-- Validaciones personalizadas -->
+<script>
+$(document).ready(function () {
+    $("#formTutor").validate({
+        rules: {
+            nombre: {
+                required: true,
+                minlength: 2
+            },
+            descripcion: {
+                required: true,
+                minlength: 30
+            }
+           
+            
+        },
+        messages: {
+            nombre: {
+                required: "Por favor ingresa el nombre",
+                minlength: "Mínimo 2 caracteres"
+            },
+            descripcion: {
+                required: "Por favor ingresa la descripcion",
+                minlength: "Mínimo 30 caracteres"
+            }
+        },
+        errorClass: "text-danger",
+        errorElement: "small",
+        highlight: function (element) {
+            $(element).addClass("is-invalid");
+        },
+        unhighlight: function (element) {
+            $(element).removeClass("is-invalid");
+        }
+    });
+});
+</script>
+
+{% endblock %}
