@@ -1,0 +1,119 @@
+{% extends '../plantilla.html' %}
+{% load static %}
+{% block body %}
+
+<div class="container mt-5">
+    <h2 class="mb-4"><i class="fas fa-user-plus me-2"></i> Edita Materia</h2>
+
+    <form id="formTutor" action="/procesar-info-materias" method="POST" enctype="multipart/form-data" class="border p-4 bg-white rounded shadow">
+        {% csrf_token %}
+        <input type="hidden" name="id" value="{{materias.id}}">
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="nombre" class="form-label">Nombre</label>
+                <input type="text" name="nombre" id="nombre" value="{{materias.nombre}}" class="form-control" required>
+            </div>
+            <div class="col-md-6">
+                <label for="descripcion" class="form-label">Descripcion</label>
+                <textarea name="descripcion" id="descripcion" class="form-control">{{materias.descripcion}} </textarea>
+            </div>
+        </div>
+        <div class="mb-3">
+                <label class="form-label">Logo actual y nuevo logotipo:</label>
+                <div class="d-flex align-items-center gap-3">
+                    {% if materias.logo %}
+                        <img src="{{ materias.logo.url }}" alt="Logo actual"
+                            style="max-height: 100px; width: auto; border: 1px solid #ddd; padding: 2px;">
+                    {% else %}
+                        <div class="text-muted">No hay logo actual.</div>
+                    {% endif %}
+                    <input type="file" name="logo" id="logo" class="form-control">
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Panfleto actual y nuevo documento:</label>
+                <div class="d-flex align-items-center gap-3">
+                    {% if materias.documento %}
+                        <div class="text-center">
+                            <i class="fa fa-file-pdf fa-2x text-danger"></i><br>
+                            <div>
+                                <small class="text-muted">{{ materias.documento.name|cut:"documentos_materias/" }}</small>
+                            </div>
+                            <a href="{{ materias.documento.url }}" class="btn btn-outline-primary btn-sm mt-1" download>
+                                Descargar
+                            </a>
+                        </div>
+                    {% else %}
+                        <div class="text-muted">No hay documento actual.</div>
+                    {% endif %}
+                    <input type="file" name="documento" id="documento" class="form-control" accept="application/pdf">
+                </div>
+            </div>
+
+        <div class="mt-4 text-end">
+            <button type="submit" class="btn btn-success">
+                <i class="fas fa-save me-1"></i> Guardar Materia
+            </button>
+            <a href="/listar-materias" class="btn btn-secondary ms-2">
+                <i class="fas fa-arrow-left me-1"></i> Cancelar
+            </a>
+        </div>
+    </form>
+</div>
+
+
+
+<!-- Validaciones personalizadas -->
+<script>
+$(document).ready(function () {
+    $("#formTutor").validate({
+        rules: {
+            nombre: {
+                required: true,
+                minlength: 2
+            },
+            descripcion: {
+                required: true,
+                minlength: 30
+            },
+           
+            documento: {
+                required: true,
+                extension: "pdf"
+            },
+            logo: {
+                extension: "jpg|jpeg|png|gif"
+            }
+        },
+        messages: {
+            nombre: {
+                required: "Por favor ingresa el nombre",
+                minlength: "Mínimo 2 caracteres"
+            },
+            descripcion: {
+                required: "Por favor ingresa la descripcion",
+                minlength: "Mínimo 30 caracteres"
+            },
+            
+            documento: {
+                required: "Debe subir un documento en PDF",
+                extension: "Solo se permite formato PDF"
+            },
+            logo: {
+                extension: "Solo se permiten imágenes JPG, PNG, GIF"
+            }
+        },
+        errorClass: "text-danger",
+        errorElement: "small",
+        highlight: function (element) {
+            $(element).addClass("is-invalid");
+        },
+        unhighlight: function (element) {
+            $(element).removeClass("is-invalid");
+        }
+    });
+});
+</script>
+
+{% endblock %}

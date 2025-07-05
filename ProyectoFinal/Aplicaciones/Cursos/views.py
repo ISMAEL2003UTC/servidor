@@ -117,7 +117,7 @@ def eliminar_usuarios(request, id):
     messages.success(request, f'Usuario {nombre} eliminado correctamente')
     return redirect('/listar-usuarios')
 
-#Tutores
+#Tutores----------------------------------------------------------------------------
 
 def listar_tutores(request):
     tutores=Tutor.objects.select_related('usuario').all()
@@ -156,7 +156,7 @@ def guardar_tutores(request):
     
     return render(request, 'tutores/crearTutores.html')
 
-#estudiantes
+#estudiantes -------------------------------------------------------------------------
 
 def listar_estudiantes(request):
     estudiantes=Estudiante.objects.select_related('usuario').all()
@@ -281,7 +281,36 @@ def eliminar_materias(request,id):
     messages.success(request,f'la materia {nombre} ha sido eliminada correctamente')
     return redirect('/listar-materias')
 
+
 def editar_materias(request,id):
-    pass
+    materias=Materia.objects.get(id=id)
+    return render(request,'materias/editarMaterias.html',{'materias':materias})
+
 def procesar_info_materias(request):
-    pass
+    id=request.POST['id']
+    materias=Materia.objects.get(id=id)
+    nombre=request.POST['nombre']
+    descripcion=request.POST['descripcion']
+    materias.nombre=nombre
+    materias.descripcion=descripcion
+
+    if 'logo' in request.FILES:
+        if materias.logo:
+            if os.path.isfile(materias.logo.path):
+                os.remove(materias.logo.path)
+        materias.logo = request.FILES['logo']
+    
+    materias.save()
+
+    # Cambiar documento si se sube nuevo
+    if 'documento' in request.FILES:
+        if materias.documento:
+            if os.path.isfile(materias.documento.path):
+                os.remove(materias.documento.path)
+        materias.documento = request.FILES['documento']
+    
+    materias.save()
+    return redirect('/listar-materias')
+
+
+
