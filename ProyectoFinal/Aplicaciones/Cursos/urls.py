@@ -22,6 +22,8 @@ urlpatterns = [
     #path('eliminar-usuarios/<id>',views.eliminar_usuarios),
     #path('editar-usuarios/<id>',views.editar_usuarios),
     #path('procesar-info-usuarios',views.procesar_info_usuarios),
+    path('solicitudes-clases-tutores',views.solicitudes_clases_tutores,name='solicitudes_clase_tutor'),
+    path('cambiar-estado-clase/<int:clase_id>/<str:nuevo_estado>',views.cambiar_estado_clase,name='cambiar_estado_clase'),
     
 
     #estudiantes

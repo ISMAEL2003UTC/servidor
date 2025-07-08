@@ -216,6 +216,36 @@ def guardar_tutores(request):
     
     return render(request, 'tutores/crearTutores.html')
 
+def solicitudes_clases_tutores(request):
+    usuario_id= tutor_logueado(request)
+    if not usuario_id:
+        messages.error(request,"Debes iniciar sesion como tutor")
+        return redirect('/login')
+    tutor = get_object_or_404(Tutor,usuario__id=usuario_id)
+    clases=Clase.objects.filter(tutor_materia__tutor=tutor, estado='pendiente').select_related(
+        'estudiante__usuario','tutor_materia__materia','tutor_materia__nivel'
+        
+    )
+    return render(request,'tutores/solicitudesClases.html',{
+        'clases':clases
+    })
+
+def cambiar_estado_clase(request,clase_id,nuevo_estado):
+    usuario_id=tutor_logueado(request)
+    if not usuario_id:
+        messages.error(request,'Debes iniciar session como tutor')
+        return redirect('/login')
+    clase=get_object_or_404(Clase,id=clase_id,tutor_materia__tutor__usuario_id=usuario_id)
+    if nuevo_estado in ['confirmada','cancelada']:
+        clase.estado = nuevo_estado
+        clase.save()
+        messages.success(request,f'clase marcada como {nuevo_estado}')
+    else:
+        messages.error(request,'Estado no valido')
+
+    return redirect('/solicitudes-clases-tutores')
+
+
 #estudiantes -------------------------------------------------------------------------
 
 def listar_estudiantes(request):
@@ -376,12 +406,7 @@ def guardar_materias(request):
     messages.success(request,f'La materia {nombre} ha sido creada exitosamente')
     return redirect('/listar-materias')
 
-def eliminar_usuarios(request, id):
-    usuario = get_object_or_404(Usuario, id=id)
-    nombre = usuario.nombre
-    usuario.delete()
-    messages.success(request, f'Usuario {nombre} eliminado correctamente')
-    return redirect('/listar-usuarios')
+
 
 def eliminar_materias(request,id):
     materia=get_object_or_404(Materia,id=id)

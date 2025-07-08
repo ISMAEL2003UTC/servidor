@@ -1,0 +1,41 @@
+{% extends '../plantilla.html' %}
+{% load static %}
+{% block body %}
+<div class="container mt-5">
+    <h2>Solicitudes de Clase Pendientes</h2>
+
+    <table class="table table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th>Estudiante</th>
+                <th>Materia</th>
+                <th>Nivel</th>
+                <th>Fecha</th>
+                <th>Hora Inicio</th>
+                <th>Hora Fin</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for clase in clases %}
+            <tr>
+                <td>{{ clase.estudiante.usuario.nombre }} {{ clase.estudiante.usuario.apellido }}</td>
+                <td>{{ clase.tutor_materia.materia.nombre }}</td>
+                <td>{{ clase.tutor_materia.nivel.nombre }}</td>
+                <td>{{ clase.fecha }}</td>
+                <td>{{ clase.hora_inicio }}</td>
+                <td>{{ clase.hora_fin }}</td>
+                <td>
+                    <a href="{% url 'cambiar_estado_clase' clase.id 'confirmada' %}" class="btn btn-success btn-sm">Aceptar</a>
+                    <a href="{% url 'cambiar_estado_clase' clase.id 'cancelada' %}" class="btn btn-danger btn-sm">Rechazar</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7" class="text-center text-muted">No hay solicitudes pendientes</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
