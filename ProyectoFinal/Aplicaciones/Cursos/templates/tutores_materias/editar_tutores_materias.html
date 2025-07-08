@@ -1,0 +1,59 @@
+{% extends '../plantilla.html' %}
+{% load static %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h4><i class="fas fa-edit me-2"></i>Editar Asociación</h4>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="/procesar-info-tutores-materias">
+                {% csrf_token %}
+                <input type="hidden" name="id" value="{{ tutor_materia.id }}">
+                
+                <div class="mb-3">
+                    <label class="form-label">Materia:</label>
+                    <select name="materia_id" class="form-select" required>
+                        <option value="">Seleccione una materia</option>
+                        {% for materia in materias %}
+                            <option value="{{ materia.id }}" 
+                                {% if materia.id == tutor_materia.materia.id %}selected{% endif %}>
+                                {{ materia.nombre }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Nivel:</label>
+                    <select name="nivel_id" class="form-select" required>
+                        <option value="">Seleccione un nivel</option>
+                        {% for nivel in niveles %}
+                            <option value="{{ nivel.id }}" 
+                                {% if nivel.id == tutor_materia.nivel.id %}selected{% endif %}>
+                                {{ nivel.nombre }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Precio por hora ($):</label>
+                    <input type="number" name="precio_hora" step="0.01" min="0" 
+                           value="{{ tutor_materia.precio_hora }}" class="form-control" required>
+                </div>
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <a href="/listar-tutores-materias" class="btn btn-secondary me-md-2">
+                        <i class="fas fa-times me-1"></i> Cancelar
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-1"></i> Guardar Cambios
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

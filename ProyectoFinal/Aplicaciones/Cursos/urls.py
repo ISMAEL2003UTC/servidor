@@ -31,6 +31,10 @@ urlpatterns = [
     path('eliminar-estudiantes/<id>',views.eliminar_estudiantes),
     path('editar-estudiantes/<id>',views.editar_estudiantes),
     path('procesar-info-estudiantes',views.procesar_info_estudiantes),
+    path('solicitar-clase', views.seleccionar_materia, name='seleccionar-materia'),
+    path('detalle-solicitud-clase/<int:materia_id>', views.detalle_solicitud_clase, name='detalle-solicitud-clase'),
+    path('guardar-clase-detalle', views.guardar_clase_detalle, name='guardar-clase-detalle'),
+
     #materias
     path('listar-materias',views.listar_materias),
     path('crear-materias',views.crear_materias),
@@ -52,6 +56,8 @@ urlpatterns = [
     path('listar-tutores-materias', views.listar_tutores_materias),
     path('crear-tutores-materias', views.crear_tutores_materias),
     path('guardar-tutores-materias', views.guardar_tutores_materias),
-    
+    path('eliminar-tm/<id>',views.eliminar_tm),
+    path('editar-tutores-materias/<id>', views.editar_tutores_materias),
+    path('procesar-info-tutores-materias', views.procesar_info_tutores_materias),
 
 ]

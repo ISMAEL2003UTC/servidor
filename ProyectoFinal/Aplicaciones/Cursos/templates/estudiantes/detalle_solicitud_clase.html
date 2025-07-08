@@ -1,0 +1,58 @@
+{% extends '../plantilla.html' %}
+{% load static %}
+{% block body %}
+<div class="container mt-5">
+
+    <h2><i class="fas fa-chalkboard-teacher me-2"></i> Completar Solicitud de Clase</h2>
+
+    <form method="POST" action="{% url 'guardar-clase-detalle' %}">
+        {% csrf_token %}
+        <input type="hidden" name="materia_id" value="{{ materia.id }}">
+
+        <!-- Nivel -->
+        <div class="mb-3">
+            <label for="nivel">Nivel</label>
+            <select name="nivel_id" id="nivel" class="form-select" required>
+                <option value="">Seleccione...</option>
+                {% for nivel in niveles %}
+                    <option value="{{ nivel.id }}">{{ nivel.nombre }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Tutor -->
+        <div class="mb-3">
+            <label for="tutor">Tutor</label>
+            <select name="tutor_id" id="tutor" class="form-select" required>
+                <option value="">Seleccione...</option>
+                {% for tm in tutores_materia %}
+                    <option value="{{ tm.tutor.id }}">
+                        {{ tm.tutor.usuario.nombre }} {{ tm.tutor.usuario.apellido }}
+                        (Nivel: {{ tm.nivel.nombre }}, ${{ tm.precio_hora }})
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Fecha y hora -->
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="fecha">Fecha</label>
+                <input type="date" name="fecha" class="form-control" required>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="hora">Hora</label>
+                <input type="time" name="hora" class="form-control" required>
+            </div>
+        </div>
+
+        <!-- Botón -->
+        <div class="text-end">
+            <button type="submit" class="btn btn-success">
+                <i class="fas fa-paper-plane me-1"></i> Enviar Solicitud
+            </button>
+        </div>
+    </form>
+
+</div>
+{% endblock %}

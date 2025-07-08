@@ -20,7 +20,7 @@ def login_view(request):
             request.session['nombre'] = usuario.nombre
 
             if usuario.rol == 'admin':
-                return redirect('/admin-dashboard')
+                return redirect('/listar-usuarios')
             elif usuario.rol == 'tutor':
                 return redirect('/listar-tutores')
             else:
@@ -175,6 +175,8 @@ def eliminar_usuarios(request, id):
     messages.success(request, f'Usuario {nombre} eliminado correctamente')
     return redirect('/listar-usuarios')
 
+
+
 #Tutores----------------------------------------------------------------------------
 
 def listar_tutores(request):
@@ -303,6 +305,54 @@ def procesar_info_estudiantes(request):
         estudiante.save()
 
     return redirect('/listar-estudiantes')
+
+# Paso 1: Vista que muestra las materias
+def seleccionar_materia(request):
+    if request.session.get('rol') != 'estudiante':
+        return redirect('/login')
+    
+    materias = Materia.objects.all()
+    return render(request, 'estudiantes/seleccionar_materia.html', {'materias': materias})
+
+
+# Paso 2: Vista que muestra detalle para solicitar clase
+def detalle_solicitud_clase(request, materia_id):
+    materia = get_object_or_404(Materia, id=materia_id)
+    
+    # niveles y tutores disponibles para esa materia
+    tutores_materia = TutorMateria.objects.filter(materia_id=materia_id).select_related('tutor__usuario', 'nivel')
+    niveles = {tm.nivel for tm in tutores_materia}  # Evitar niveles duplicados
+
+    return render(request, 'estudiantes/detalle_solicitud_clase.html', {
+        'materia': materia,
+        'tutores_materia': tutores_materia,
+        'niveles': niveles
+    })
+
+
+# Paso 3: Guardar clase desde detalle
+def guardar_clase_detalle(request):
+    if request.method == 'POST':
+        estudiante = get_object_or_404(Estudiante, usuario__id=request.session['usuario_id'])
+
+        tutor = get_object_or_404(Tutor, id=request.POST['tutor_id'])
+        materia = get_object_or_404(Materia, id=request.POST['materia_id'])
+        nivel = get_object_or_404(Nivel, id=request.POST['nivel_id'])
+        fecha = request.POST['fecha']
+        hora = request.POST['hora']
+
+        tm = get_object_or_404(TutorMateria, tutor=tutor, materia=materia, nivel=nivel)
+
+        Clase.objects.create(
+            estudiante=estudiante,
+            tutor_materia=tm,
+            fecha=fecha,
+            hora_inicio=hora,
+            hora_fin=hora,  # Puedes ajustar duración
+            estado='pendiente'
+        )
+        messages.success(request, 'Clase solicitada correctamente.')
+        return redirect('/listar-estudiantes')
 
 #materias ----------------------------------------------------------------
 def listar_materias(request):
@@ -489,4 +539,64 @@ def guardar_tutores_materias(request):
 
     return redirect('/crear-tutores-materias')
 
+def editar_tutores_materias(request, id):
+    usuario_id = tutor_logueado(request)
+    if not usuario_id:
+        messages.error(request, "Debes iniciar sesión como tutor para acceder aquí.")
+        return redirect('/login')
+
+    tutor_materia = get_object_or_404(TutorMateria, id=id, tutor__usuario__id=usuario_id)
+    materias = Materia.objects.all()
+    niveles = Nivel.objects.all()
+
+    return render(request, 'tutores_materias/editar_tutores_materias.html', {
+        'tutor_materia': tutor_materia,
+        'materias': materias,
+        'niveles': niveles,
+    })
+
+def procesar_info_tutores_materias(request):
+    if request.method == 'POST':
+        usuario_id = tutor_logueado(request)
+        if not usuario_id:
+            messages.error(request, "Debes iniciar sesión como tutor para realizar esta acción.")
+            return redirect('/login')
+
+        id = request.POST.get('id')
+        tutor_materia = get_object_or_404(TutorMateria, id=id, tutor__usuario__id=usuario_id)
+        
+        materia_id = request.POST.get('materia_id')
+        nivel_id = request.POST.get('nivel_id')
+        precio_hora = request.POST.get('precio_hora')
+
+        # Validar si la nueva combinación ya existe (excluyendo el registro actual)
+        existe = TutorMateria.objects.filter(
+            tutor=tutor_materia.tutor,
+            materia_id=materia_id,
+            nivel_id=nivel_id
+        ).exclude(id=id).exists()
+
+        if existe:
+            messages.error(request, "Ya tienes asociada esta materia y nivel.")
+            return redirect(f'/editar-tutores-materias/{id}')
+
+        # Actualizar los datos
+        tutor_materia.materia_id = materia_id
+        tutor_materia.nivel_id = nivel_id
+        tutor_materia.precio_hora = precio_hora
+        tutor_materia.save()
+
+        messages.success(request, "Asociación actualizada correctamente.")
+        return redirect('/listar-tutores-materias')
+
+    return redirect('/listar-tutores-materias')
+
+def eliminar_tm(request, id):
+    tm = get_object_or_404(TutorMateria, id=id)
+    nombre_materia = tm.materia.nombre  # Obtenemos el nombre de la materia
+    
+    tm.delete()
+    messages.success(request, f'Tu materia {nombre_materia} ha sido eliminada correctamente')
+    # Aquí debes redirigir a alguna vista, por ejemplo:
+    return redirect('/listar-tutores-materias')
 
