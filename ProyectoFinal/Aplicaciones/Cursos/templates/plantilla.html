@@ -128,6 +128,12 @@
                   <p>Solicitudes de Clase</p>
                 </a>
               </li>
+              <li class="nav-item">
+                <a href="/clases-confirmadas-tutores">
+                  <i class="fas fa-clipboard-check"></i>
+                  <p>Mis Clases</p>
+                </a>
+              </li>
 
               {% endif %}
               
@@ -137,6 +143,12 @@
                 <a href="/solicitar-clase">
                   <i class="fas fa-layer-group"></i>
                   <p>Solicitar Clase</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="/clases-confirmadas">
+                  <i class="fas fa-layer-group"></i>
+                  <p>Clases Confirmadas</p>
                 </a>
               </li>
               
@@ -280,11 +292,19 @@
                 <li class="nav-item topbar-user dropdown hidden-caret">
                   <a class="dropdown-toggle profile-pic" data-bs-toggle="dropdown" href="#" aria-expanded="false">
                     <div class="avatar-sm">
-                      <img src="{% static 'img/Matt.jpeg' %}" alt="..." class="avatar-img rounded-circle" />
+                      {% if request.session.usuario_id %}
+                        <img src="{{ request.session.logo_url }}" alt="Imagen De Perfil" class="avatar-img rounded" />
+                      {% else %}
+                        <img src="{% static 'plantilla/kaiadmin/assets/img/profile.jpg' %}" alt="Imagen De Perfil" class="avatar-img rounded" />
+                      {% endif %}
                     </div>
                     <span class="profile-username">
-                      <span class="op-7">Marlon Israel,</span>
-                      <span class="fw-bold">Marlon</span>
+                      {% if request.session.usuario_id %}
+                        <span class="op-7">{{ request.session.nombre|default:"Usuario" }}</span>
+                        <span class="fw-bold">{{ request.session.rol|title|default:"Sin rol" }}</span>
+                      {% else %}
+                        <span class="text-warning">No Logueado</span>
+                      {% endif %}
                     </span>
                   </a>
                   <ul class="dropdown-menu dropdown-user animated fadeIn">
@@ -292,24 +312,39 @@
                       <li>
                         <div class="user-box">
                           <div class="avatar-lg">
-                            <img src="{% static 'plantilla/kaiadmin/assets/img/profile.jpg' %}" alt="image profile" class="avatar-img rounded" />
+                            {% if request.session.usuario_id %}
+                              <img src="{{ request.session.logo_url }}" alt="Imagen De Perfil" class="avatar-img rounded" />
+                            {% else %}
+                              <img src="{% static 'plantilla/kaiadmin/assets/img/profile.jpg' %}" alt="Imagen De Perfil" class="avatar-img rounded" />
+                            {% endif %}
                           </div>
                           <div class="u-text">
-                            <h4>Hizrian</h4>
-                            <p class="text-muted">hello@example.com</p>
-                            <a href="profile.html" class="btn btn-xs btn-secondary btn-sm">View Profile</a>
+                            <h4>
+                              {% if request.session.usuario_id %}
+                                {{request.session.nombre}}
+                              {% else %}
+                                Invitado
+                              {% endif %}
+
+                            </h4>
+                            <p class="text-muted">
+                              {% if request.session.usuario_id %}
+                                {{request.session.correo}}
+                              {% else %}
+                                example@gmail.com
+                              {% endif %}
+                            </p>
+                            <a href="profile.html" class="btn btn-xs btn-secondary btn-sm">Ver Perfil</a>
                           </div>
                         </div>
                       </li>
                       <li>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">My Profile</a>
-                        <a class="dropdown-item" href="#">My Balance</a>
-                        <a class="dropdown-item" href="#">Inbox</a>
+                        <a class="dropdown-item" href="#">Mi perfil</a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">Account Setting</a>
+                        <a class="dropdown-item" href="#">Configuracion</a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">Logout</a>
+                        <a class="dropdown-item" href="/logout">Cerrar Sesion</a>
                       </li>
                     </div>
                   </ul>

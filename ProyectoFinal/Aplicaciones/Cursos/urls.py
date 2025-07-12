@@ -19,11 +19,13 @@ urlpatterns = [
     path('listar-tutores',views.listar_tutores),
     path('crear-tutores',views.crear_tutores),
     path('guardar-tutores',views.guardar_tutores),
-    #path('eliminar-usuarios/<id>',views.eliminar_usuarios),
-    #path('editar-usuarios/<id>',views.editar_usuarios),
-    #path('procesar-info-usuarios',views.procesar_info_usuarios),
+    path('eliminar-tutores/<id>',views.eliminar_tutores),
+    path('editar-tutores/<id>',views.editar_tutores),
+    path('procesar-info-tutores',views.procesar_info_tutores),
     path('solicitudes-clases-tutores',views.solicitudes_clases_tutores,name='solicitudes_clase_tutor'),
-    path('cambiar-estado-clase/<int:clase_id>/<str:nuevo_estado>',views.cambiar_estado_clase,name='cambiar_estado_clase'),
+    path('cambiar-estado-clase/<int:clase_id>/<str:nuevo_estado>/', views.cambiar_estado_clase, name='cambiar_estado_clase'),
+    path('clases-confirmadas-tutores',views.clases_confirmadas_tutores),
+
     
 
     #estudiantes
@@ -36,7 +38,7 @@ urlpatterns = [
     path('solicitar-clase', views.seleccionar_materia, name='seleccionar-materia'),
     path('detalle-solicitud-clase/<int:materia_id>', views.detalle_solicitud_clase, name='detalle-solicitud-clase'),
     path('guardar-clase-detalle', views.guardar_clase_detalle, name='guardar-clase-detalle'),
-
+    path('clases-confirmadas/', views.clases_confirmadas_estudiante, name='clases_confirmadas'),
     #materias
     path('listar-materias',views.listar_materias),
     path('crear-materias',views.crear_materias),

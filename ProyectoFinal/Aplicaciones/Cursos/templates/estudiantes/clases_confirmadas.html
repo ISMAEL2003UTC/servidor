@@ -1,0 +1,38 @@
+{% extends '../plantilla.html' %}
+{% block body %}
+<div class="container mt-5">
+    <h2>Clases Confirmadas y Próximas</h2>
+    {% if clases %}
+    <table class="table table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th>Materia</th>
+                <th>Nivel</th>
+                <th>Fecha</th>
+                <th>Hora</th>
+                <th>Enlace de Reunión</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for clase in clases %}
+            <tr>
+                <td>{{ clase.tutor_materia.materia.nombre }}</td>
+                <td>{{ clase.tutor_materia.nivel.nombre }}</td>
+                <td>{{ clase.fecha|date:"d/m/Y" }}</td>
+                <td>{{ clase.hora_inicio|time:"H:i" }}</td>
+                <td>
+                    {% if clase.link_jitsi %}
+                    <a href="{{ clase.link_jitsi }}" target="_blank" class="btn btn-success btn-sm">Unirme a la Reunión</a>
+                    {% else %}
+                    <span class="text-muted">Enlace no disponible</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <p>No tienes clases confirmadas aún.</p>
+    {% endif %}
+</div>
+{% endblock %}

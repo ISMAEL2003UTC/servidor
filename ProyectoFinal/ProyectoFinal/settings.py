@@ -134,3 +134,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 #sudo chmod 777 -R nombreCarpeta o chown
 MEDIA_URL='/media/'
 MEDIA_ROOT=(os.path.join(BASE_DIR,'ProyectoFinal/media'))
+
+# CONFIGURACION SMTP DE GMAIL
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'marlon.acosta9259@utc.edu.ec' # Tu correo electrónico
+EMAIL_HOST_PASSWORD = 'qkchxlehppnxixrw' 

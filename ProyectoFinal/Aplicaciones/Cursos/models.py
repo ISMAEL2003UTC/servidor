@@ -107,7 +107,10 @@ class Clase(models.Model):
     hora_inicio = models.TimeField()
     hora_fin = models.TimeField()
     estado = models.CharField(max_length=20, choices=ESTADOS, default='pendiente')
-
+    link_jitsi = models.URLField(blank=True, null=True)
+    class Meta:
+        # Aquí está la clave: la combinación de estos tres campos debe ser única
+        unique_together = ('tutor_materia', 'fecha', 'hora_inicio')
     def __str__(self):
         return f"Clase {self.id} - {self.fecha} - {self.estado}"
 

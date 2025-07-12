@@ -1,8 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 import os
+from django.db import IntegrityError
+from datetime import datetime
+from django.contrib import messages
 from django.core.mail import send_mail
-
 from .models import Usuario, Tutor, Estudiante, Materia, Nivel, TutorMateria, Clase, Seguimiento, Pago, Valoracion, Ubicacion, MensajeClase
 
 #login
@@ -18,13 +20,19 @@ def login_view(request):
             request.session['usuario_id'] = usuario.id
             request.session['rol'] = usuario.rol
             request.session['nombre'] = usuario.nombre
+            request.session['correo']=usuario.correo
+            #manejo de imagen de perfil
+            if usuario.logo:
+                request.session['logo_url']=usuario.logo.url
+            else:
+                request.session['logo_url']='/static/img/default-user.png'
 
             if usuario.rol == 'admin':
                 return redirect('/listar-usuarios')
             elif usuario.rol == 'tutor':
-                return redirect('/listar-tutores')
+                return redirect('/listar-tutores-materias')
             else:
-                return redirect('/listar-estudiantes')
+                return redirect('/solicitar-clase')
         except Usuario.DoesNotExist:
             messages.error(request, 'Correo o contraseña incorrectos.')
 
@@ -56,7 +64,11 @@ def recuperar_contrasena(request):
     return render(request, 'recuperar_contrasena.html')
 
 def home(request):
+    if 'usuario_id' not in request.session:
+        return redirect('login')  # Redirige al login si no ha iniciado sesión
+    
     return render(request, 'home.html')
+
 
 # Función para verificar sesión y rol tutor
 def tutor_logueado(request):
@@ -177,7 +189,9 @@ def eliminar_usuarios(request, id):
 
 
 
+
 #Tutores----------------------------------------------------------------------------
+
 
 def listar_tutores(request):
     tutores=Tutor.objects.select_related('usuario').all()
@@ -216,6 +230,79 @@ def guardar_tutores(request):
     
     return render(request, 'tutores/crearTutores.html')
 
+
+
+def eliminar_tutores(request,id):
+    usuario_id = request.session.get('usuario_id')
+    rol = request.session.get('rol')
+
+    if not usuario_id or rol != 'admin':
+        messages.error(request, 'Debes iniciar sesión como Administrador')
+        return redirect('/login')
+    usuario=get_object_or_404(Usuario,id=id,rol='tutor')
+    nombre=usuario.nombre
+    try:
+        tutor=Tutor.objects.get(usuario=usuario)
+        tutor.delete()
+    except Tutor.DoesNotExist:
+        pass
+    usuario.delete()
+    messages.success(request,f'Tutor {nombre} eliminador correctamente')
+    return redirect('/listar-tutores')
+
+def editar_tutores(request,id):
+    usuario_id = request.session.get('usuario_id')
+    rol = request.session.get('rol')
+
+    if not usuario_id or rol != 'admin':
+        messages.error(request, 'Debes iniciar sesión como Administrador')
+        return redirect('/login')
+    usuarios=get_object_or_404(Usuario,id=id,rol='tutor')
+    tutores=get_object_or_404(Tutor,usuario=usuarios)
+    return render(request,'tutores/editarTutores.html',{
+        'usuarios':usuarios,
+        'tutores':tutores
+    })
+
+def procesar_info_tutores(request):
+    usuario_id = request.session.get('usuario_id')
+    rol = request.session.get('rol')
+
+    if not usuario_id or rol != 'admin':
+        messages.error(request, 'Debes iniciar sesión como Administrador')
+        return redirect('/login')
+    if request.method == 'POST':
+        id_usuario = request.POST['id']
+        usuario = Usuario.objects.get(id=id_usuario)
+        tutor = Tutor.objects.get(usuario=usuario)
+
+        # Actualizar campos del usuario
+        usuario.nombre = request.POST['nombre']
+        usuario.apellido = request.POST['apellido']
+        usuario.correo = request.POST['correo']
+        usuario.telefono = request.POST['telefono']
+        usuario.password_hash = request.POST['password']
+        usuario.fecha_registro = request.POST['fecha']
+        # Cambiar logo si se sube nuevo
+        if 'logo' in request.FILES:
+            if usuario.logo:
+                if os.path.isfile(usuario.logo.path):
+                    os.remove(usuario.logo.path)
+            usuario.logo = request.FILES['logo']
+        
+        usuario.save()
+
+        # Cambiar documento si se sube nuevo
+        if 'documento' in request.FILES:
+            if tutor.documento:
+                if os.path.isfile(tutor.documento.path):
+                    os.remove(tutor.documento.path)
+            tutor.documento = request.FILES['documento']
+        
+        tutor.save()
+
+    return redirect('/listar-tutores')
+
 def solicitudes_clases_tutores(request):
     usuario_id= tutor_logueado(request)
     if not usuario_id:
@@ -230,7 +317,7 @@ def solicitudes_clases_tutores(request):
         'clases':clases
     })
 
-def cambiar_estado_clase(request,clase_id,nuevo_estado):
+'''def cambiar_estado_clase(request,clase_id,nuevo_estado):
     usuario_id=tutor_logueado(request)
     if not usuario_id:
         messages.error(request,'Debes iniciar session como tutor')
@@ -239,13 +326,116 @@ def cambiar_estado_clase(request,clase_id,nuevo_estado):
     if nuevo_estado in ['confirmada','cancelada']:
         clase.estado = nuevo_estado
         clase.save()
-        messages.success(request,f'clase marcada como {nuevo_estado}')
+        messages.success(request,f'clase marcada  {nuevo_estado}')
     else:
         messages.error(request,'Estado no valido')
 
+    return redirect('/solicitudes-clases-tutores') '''
+
+'''def cambiar_estado_clase(request, clase_id, nuevo_estado):
+    usuario_id = tutor_logueado(request)
+    if not usuario_id:
+        messages.error(request, 'Debes iniciar sesión como tutor')
+        return redirect('/login')
+
+    # Verificamos que la clase pertenezca al tutor logueado
+    clase = get_object_or_404(Clase, id=clase_id, tutor_materia__tutor__usuario_id=usuario_id)
+
+    if nuevo_estado not in ['pendiente', 'confirmada', 'cancelada']:
+        messages.error(request, 'Estado no válido')
+        return redirect('/solicitudes-clases-tutores')
+
+    if nuevo_estado == 'confirmada' and not clase.link_jitsi:
+        # Crear link Jitsi dinámicamente
+        base_url = "https://meet.jit.si/"
+        sala = f"educatec_clase_{clase.id}"
+        clase.link_jitsi = f"{base_url}{sala}"
+
+        # Enviar correo al estudiante (comentado, pero listo para usar)
+        
+        send_mail(
+            subject='Tu clase ha sido confirmada',
+            message=f'Se ha confirmado tu clase . Únete aquí: {clase.link_jitsi}',
+            from_email='marlon.acosta9259@utc.edu.ec',
+            recipient_list=[clase.estudiante.usuario.correo],
+            fail_silently=True,
+        )
+        
+
+    clase.estado = nuevo_estado
+    clase.save()
+    messages.success(request, f'Clase marcada como {nuevo_estado}')
     return redirect('/solicitudes-clases-tutores')
+'''
+def cambiar_estado_clase(request, clase_id, nuevo_estado):
+    usuario_id = request.session.get('usuario_id')
+    
+    if not usuario_id or request.session.get('rol') != 'tutor':
+        messages.error(request, 'Debes iniciar sesión como tutor.')
+        return redirect('/login')
 
+    # Obtiene la clase y precarga datos; si no existe o no pertenece al tutor, devuelve 404
+    clase = get_object_or_404(
+        Clase.objects.select_related(
+            'tutor_materia__tutor__usuario', 
+            'tutor_materia__materia',
+            'estudiante__usuario'
+        ), 
+        id=clase_id, 
+        tutor_materia__tutor__usuario_id=usuario_id
+    )
 
+    if nuevo_estado not in ['pendiente', 'confirmada', 'cancelada']:
+        messages.error(request, 'Estado no válido.')
+        return redirect('/solicitudes-clases-tutores')
+
+    if nuevo_estado == 'confirmada' and not clase.link_jitsi:
+        clase.link_jitsi = f"https://meet.jit.si/educatec_clase_{clase.id}"
+        
+        # Prepara y envía el correo directamente
+        send_mail(
+            subject=f'Clase de {clase.tutor_materia.materia.nombre} confirmada con {clase.tutor_materia.tutor.usuario.nombre} {clase.tutor_materia.tutor.usuario.apellido}',
+            message=(
+                f'Hola {clase.estudiante.usuario.nombre},\n\n'
+                f'Tu clase de **{clase.tutor_materia.materia.nombre}** con el tutor **{clase.tutor_materia.tutor.usuario.nombre} {clase.tutor_materia.tutor.usuario.apellido}** '
+                f'ha sido confirmada.\n\n'
+                f'Detalles de la clase:\n'
+                f'  Materia: {clase.tutor_materia.materia.nombre}\n'
+                f'  Hora: {clase.hora_inicio.strftime("%H:%M")}\n'
+                f'  Tutor: {clase.tutor_materia.tutor.usuario.nombre} {clase.tutor_materia.tutor.usuario.apellido}\n\n'
+                f'Para unirte a tu clase, haz clic en el siguiente enlace:\n'
+                f'{clase.link_jitsi}\n\n'
+                f'¡Te esperamos en Educatec!'
+            ),
+            from_email='marlon.acosta9259@utc.edu.ec',
+            recipient_list=[clase.estudiante.usuario.correo],
+            fail_silently=True,
+        )
+        
+    clase.estado = nuevo_estado
+    clase.save()
+    messages.success(request, f'Clase marcada como {nuevo_estado}.')
+    return redirect('/solicitudes-clases-tutores')
+    
+def clases_confirmadas_tutores(request):
+    usuario_id = request.session.get('usuario_id')
+    rol=request.session.get('rol')
+
+    if not usuario_id or rol != 'tutor':
+        messages.error(request,'Debes iniciar session como tutor para ver tus clases ')
+        return redirect('/login')
+    tutor = get_object_or_404(Tutor,usuario__id=usuario_id)
+    clases_confirmadas=Clase.objects.filter(
+        tutor_materia__tutor=tutor,
+        estado='confirmada'
+    ).select_related(
+        'estudiante__usuario',#para acceder al nombr del estudiante
+        'tutor_materia__materia'#para acceder al nombre de la materua
+    ).order_by('fecha','hora_inicio') #ordenar por fecha y hora 
+
+    return render(request,'tutores/misMaterias.html',{
+        'clases':clases_confirmadas
+    })
 #estudiantes -------------------------------------------------------------------------
 
 def listar_estudiantes(request):
@@ -294,7 +484,7 @@ def eliminar_estudiantes(request,id):
         pass
     usuario.delete()
     messages.success(request,f'El estudiante{nombre} ha sido eliminado correctamente')
-    return redirect('/listar-usuarios')
+    return redirect('/listar-estudiantes')
 
 def editar_estudiantes(request,id):
     usuario=get_object_or_404(Usuario,id=id,rol='estudiante')
@@ -361,7 +551,7 @@ def detalle_solicitud_clase(request, materia_id):
 
 
 # Paso 3: Guardar clase desde detalle
-def guardar_clase_detalle(request):
+''' def guardar_clase_detalle(request):
     if request.method == 'POST':
         estudiante = get_object_or_404(Estudiante, usuario__id=request.session['usuario_id'])
 
@@ -383,6 +573,69 @@ def guardar_clase_detalle(request):
         )
         messages.success(request, 'Clase solicitada correctamente.')
         return redirect('/listar-estudiantes')
+'''
+def guardar_clase_detalle(request):
+    if request.method == 'POST':
+        estudiante = get_object_or_404(Estudiante, usuario__id=request.session['usuario_id'])
+
+        tutor = get_object_or_404(Tutor, id=request.POST['tutor_id'])
+        materia = get_object_or_404(Materia, id=request.POST['materia_id'])
+        nivel = get_object_or_404(Nivel, id=request.POST['nivel_id']) # <-- CORRECCIÓN AQUÍ
+
+        try:
+            fecha_obj = datetime.strptime(request.POST['fecha'], '%Y-%m-%d').date()
+            hora_obj = datetime.strptime(request.POST['hora'], '%H:%M').time()
+        except ValueError:
+            messages.error(request, 'Formato de fecha u hora incorrecto. Usa AAAA-MM-DD y HH:MM.')
+            return redirect('/solicitar-clase', materia_id=materia.id)
+
+        tm = get_object_or_404(TutorMateria, tutor=tutor, materia=materia, nivel=nivel)
+
+        if Clase.objects.filter(
+            tutor_materia__tutor=tutor,
+            fecha=fecha_obj,
+            hora_inicio=hora_obj
+        ).exists():
+            messages.error(request, 'Ya existe una clase programada con este tutor a esta hora y fecha. Por favor, elige otro horario.')
+            return redirect('/solicitar-clase', materia_id=materia.id)
+
+        try:
+            Clase.objects.create(
+                estudiante=estudiante,
+                tutor_materia=tm,
+                fecha=fecha_obj,
+                hora_inicio=hora_obj,
+                hora_fin=hora_obj,
+                estado='pendiente'
+            )
+            messages.success(request, 'Clase solicitada correctamente. Esperando confirmación del tutor.')
+            return redirect('/solicitar-clase')
+        except IntegrityError:
+            messages.error(request, 'Este horario ya no está disponible. Por favor, elige otro.')
+            return redirect('/solicitar-clase', materia_id=materia.id)
+        except Exception as e:
+            messages.error(request, f'Ocurrió un error inesperado al solicitar la clase: {e}')
+            return redirect('/solicitar-clase', materia_id=materia.id)
+
+    return redirect('/solicitar-clase')
+
+#nuevo
+def clases_confirmadas_estudiante(request):
+    usuario_id = request.session.get('usuario_id')
+    rol = request.session.get('rol')
+
+    if not usuario_id or rol != 'estudiante':
+        messages.error(request, 'Debes iniciar sesión como estudiante')
+        return redirect('/login')
+
+    estudiante = get_object_or_404(Estudiante, usuario__id=usuario_id)
+
+    clases_confirmadas = Clase.objects.filter(
+        estudiante=estudiante,
+        estado='confirmada'
+    ).order_by('fecha', 'hora_inicio')
+
+    return render(request, 'estudiantes/clases_confirmadas.html', {'clases': clases_confirmadas})
 
 #materias ----------------------------------------------------------------
 def listar_materias(request):

@@ -12,7 +12,7 @@
                 <th>Nivel</th>
                 <th>Fecha</th>
                 <th>Hora Inicio</th>
-                <th>Hora Fin</th>
+                <!--<th>Hora Fin</th>-->
                 <th>Acciones</th>
             </tr>
         </thead>
@@ -24,7 +24,7 @@
                 <td>{{ clase.tutor_materia.nivel.nombre }}</td>
                 <td>{{ clase.fecha }}</td>
                 <td>{{ clase.hora_inicio }}</td>
-                <td>{{ clase.hora_fin }}</td>
+                <!--<td>{{ clase.hora_fin }}</td> -->
                 <td>
                     <a href="{% url 'cambiar_estado_clase' clase.id 'confirmada' %}" class="btn btn-success btn-sm">Aceptar</a>
                     <a href="{% url 'cambiar_estado_clase' clase.id 'cancelada' %}" class="btn btn-danger btn-sm">Rechazar</a>
