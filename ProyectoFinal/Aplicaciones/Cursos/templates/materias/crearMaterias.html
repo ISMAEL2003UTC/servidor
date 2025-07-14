@@ -11,7 +11,7 @@
         <div class="row mb-3">
             <div class="col-md-6">
                 <label for="nombre" class="form-label">Nombre</label>
-                <input type="text" name="nombre" id="nombre" class="form-control" required>
+                <input type="text" name="nombre" id="nombre" class="form-control" >
             </div>
             <div class="col-md-6">
                 <label for="descripcion" class="form-label">Descripcion</label>
@@ -25,7 +25,7 @@
             </div>
             <div class="col-md-6">
                 <label for="documento" class="form-label">Documento (PDF)</label>
-                <input type="file" name="documento" id="documento" class="form-control" accept="application/pdf" required>
+                <input type="file" name="documento" id="documento" class="form-control" accept="application/pdf" >
             </div>
         </div>
 
@@ -82,16 +82,22 @@ $(document).ready(function () {
                 extension: "Solo se permiten imágenes JPG, PNG, GIF"
             }
         },
-        errorClass: "text-danger",
-        errorElement: "small",
-        highlight: function (element) {
-            $(element).addClass("is-invalid");
-        },
-        unhighlight: function (element) {
-            $(element).removeClass("is-invalid");
-        }
+      
     });
 });
 </script>
+<script>
+document.getElementById('formTutor').addEventListener('submit', function(e) {
+    const nombre = document.getElementById('nombre').value.trim();
+
+    if (!nombre || nombre.length < 2) {
+        e.preventDefault(); // Previene el envío del formulario
+        alert('Llena los datos');
+        document.getElementById('nombre').focus();
+        return false;
+    }
+});
+</script>
+
 
 {% endblock %}

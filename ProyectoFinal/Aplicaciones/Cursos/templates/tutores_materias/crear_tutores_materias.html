@@ -2,37 +2,109 @@
 {% load static %}
 
 {% block body %}
-<h2>Asociar Materia y Nivel</h2>
-<form method="POST" action="/guardar-tutores-materias">
-  {% csrf_token %}
-  <label>Materia:</label>
-  <select name="materia_id" required>
-    <option value="">Seleccione</option>
-    {% for materia in materias %}
-    <option value="{{ materia.id }}">{{ materia.nombre }}</option>
-    {% endfor %}
-  </select><br>
+<div class="container mt-5">
+  <div class="card shadow rounded">
+    <div class="card-header bg-dark text-white">
+      <h4>Asociar Materia y Nivel</h4>
+    </div>
+    <div class="card-body">
+      <form method="POST" action="/guardar-tutores-materias" id="formulario">
+        {% csrf_token %}
 
-  <label>Nivel:</label>
-  <select name="nivel_id" required>
-    <option value="">Seleccione</option>
-    {% for nivel in niveles %}
-    <option value="{{ nivel.id }}">{{ nivel.nombre }}</option>
-    {% endfor %}
-  </select><br>
+        <!-- MATERIAS CON IMAGEN -->
+        <div class="mb-4">
+          <label class="form-label">Materia:</label>
+          <div class="row row-cols-2 row-cols-md-4 g-3">
+            {% for materia in materias %}
+              <div class="col">
+                <label class="card h-100 materia-card" style="cursor: pointer;">
+                  <input type="radio" name="materia_id" value="{{ materia.id }}" class="form-check-input position-absolute top-0 end-0 m-2" required>
+                  <img src="{{ materia.logo.url }}" class="card-img-top" alt="{{ materia.nombre }}" style="height: 150px; object-fit: cover;">
+                  <div class="card-body text-center">
+                    <strong>{{ materia.nombre }}</strong>
+                  </div>
+                </label>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
 
-  <label>Precio por hora:</label>
-  <input type="number" name="precio_hora" step="0.01" min="0" required><br>
+        <!-- SELECT DE NIVELES -->
+        <div class="mb-3">
+          <label class="form-label">Nivel:</label>
+          <select name="nivel_id" class="form-select" required>
+            <option value="">Seleccione</option>
+            {% for nivel in niveles %}
+            <option value="{{ nivel.id }}">{{ nivel.nombre }}</option>
+            {% endfor %}
+          </select>
+        </div>
 
-  <button type="submit">Guardar</button>
-</form>
+        <!-- PRECIO -->
+        <div class="mb-3">
+          <label class="form-label">Precio por hora:</label>
+          <input type="number" name="precio_hora" class="form-control" >
+        </div>
 
-{% if messages %}
-  <ul>
-    {% for message in messages %}
-      <li>{{ message }}</li>
-    {% endfor %}
-  </ul>
-{% endif %}
+        <!-- BOTÓN -->
+        <div class="text-end">
+          <button type="submit" class="btn btn-primary">Guardar</button>
+        </div>
+      </form>
+
+      <!-- MENSAJES -->
+      {% if messages %}
+        <div class="mt-3">
+          {% for message in messages %}
+            <div class="alert alert-info" role="alert">
+              {{ message }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<script>
+$(document).ready(function () {
+  $('#formulario').validate({
+    rules: {
+      materia_id: {
+        required: true
+      },
+      nivel_id: {
+        required: true
+      },
+      precio_hora: {
+        required: true,
+        number: true,
+        min: 0,
+        max:50
+      }
+    },
+    messages: {
+      materia_id: {
+        required: "Seleccione una materia."
+      },
+      nivel_id: {
+        required: "Seleccione un nivel."
+      },
+      precio_hora: {
+        required: "Este campo es requerido ingrese el precio por hora.",
+        number: "Ingrese un número válido.",
+        min: "El precio no puede ser negativo.",
+        max:'El precio no puede superar los 50 dolares'
+      }
+    },
+    errorClass: "is-invalid",
+    validClass: "is-valid",
+    errorPlacement: function (error, element) {
+      error.addClass("invalid-feedback");
+      error.insertAfter(element);
+    }
+  });
+});
+</script>
 
 {% endblock %}

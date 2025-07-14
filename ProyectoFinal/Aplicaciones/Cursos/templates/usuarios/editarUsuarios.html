@@ -11,28 +11,28 @@
 
             <div class="mb-3">
                 <label for="nombre" class="form-label">Nombre:</label>
-                <input type="text" name="nombre" id="nombre" value="{{usuarios.nombre}}" class="form-control" required>
+                <input type="text" name="nombre" id="nombre" value="{{usuarios.nombre}}" class="form-control" >
             </div>
 
             <div class="mb-3">
                 <label for="apellido" class="form-label">Apellido:</label>
-                <input type="text" name="apellido" id="apellido" value="{{usuarios.apellido}}" class="form-control" required>
+                <input type="text" name="apellido" id="apellido" value="{{usuarios.apellido}}" class="form-control" >
             </div>
 
             <div class="mb-3">
                 <label for="correo" class="form-label">Correo electrónico:</label>
-                <input type="email" name="correo" id="correo" value="{{usuarios.correo}}" class="form-control" required>
+                <input type="email" name="correo" id="correo" value="{{usuarios.correo}}" class="form-control" >
             </div>
 
             <div class="mb-3">
                 <label for="telefono" class="form-label">Teléfono:</label>
-                <input type="tel" name="telefono" id="telefono" value="{{usuarios.telefono}}" class="form-control" required title="Debe tener entre 7 y 15 dígitos">
+                <input type="tel" name="telefono" id="telefono" value="{{usuarios.telefono}}" class="form-control"  >
             </div>
 
             <div class="mb-3">
                 <label for="password" class="form-label">Contraseña:</label>
                 <div class="input-group">
-                    <input type="password" name="password" id="password" value="{{ usuarios.password_hash }}" class="form-control" required minlength="6">
+                    <input type="password" name="password" id="password" value="{{ usuarios.password_hash }}" class="form-control" >
                     <button class="btn btn-outline-secondary" type="button" onclick="mostrarOcultarPassword()">👁️</button>
                 </div>
             </div>
@@ -40,7 +40,7 @@
             <!-- Campo Rol -->
             <div class="mb-3">
                 <label for="rol" class="form-label">Rol:</label>
-                <select name="rol" id="rol" class="form-select" required>
+                <select name="rol" id="rol" class="form-select" >
                     <option value="tutor" {% if usuarios.rol == 'tutor' %}selected{% endif %}>Tutor</option>
                     <option value="estudiante" {% if usuarios.rol == 'estudiante' %}selected{% endif %}>Estudiante</option>
                     <option value="admin" {% if usuarios.rol == 'admin' %}selected{% endif %}>Administrador</option>
@@ -103,8 +103,8 @@ $(document).ready(function() {
             },
             telefono: {
                 digits: true,
-                minlength: 7,
-                maxlength: 15
+                minlength: 10,
+                maxlength: 10
             },
             rol: {
                 required: true
@@ -135,8 +135,8 @@ $(document).ready(function() {
             },
             telefono: {
                 digits: "Solo se permiten números",
-                minlength: "Mínimo 7 dígitos",
-                maxlength: "Máximo 15 dígitos"
+                minlength: "Mínimo 10 dígitos",
+                maxlength: "Máximo 10 dígitos"
             },
             rol: {
                 required: "Debe seleccionar un rol"

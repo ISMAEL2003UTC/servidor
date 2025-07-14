@@ -11,33 +11,33 @@
         <div class="row mb-3">
             <div class="col-md-6">
                 <label for="nombre" class="form-label">Nombre</label>
-                <input type="text" name="nombre" id="nombre" class="form-control" required>
+                <input type="text" name="nombre" id="nombre" class="form-control" >
             </div>
             <div class="col-md-6">
                 <label for="apellido" class="form-label">Apellido</label>
-                <input type="text" name="apellido" id="apellido" class="form-control" required>
+                <input type="text" name="apellido" id="apellido" class="form-control" >
             </div>
         </div>
 
         <div class="row mb-3">
             <div class="col-md-6">
                 <label for="correo" class="form-label">Correo electrónico</label>
-                <input type="email" name="correo" id="correo" class="form-control" required>
+                <input type="email" name="correo" id="correo" class="form-control" >
             </div>
             <div class="col-md-6">
                 <label for="telefono" class="form-label">Teléfono</label>
-                <input type="text" name="telefono" id="telefono" class="form-control" pattern="\d{7,15}" title="Debe contener entre 7 y 15 dígitos numéricos">
+                <input type="text" name="telefono" id="telefono" class="form-control" pattern="\d{7,15}" >
             </div>
         </div>
 
         <div class="row mb-3">
             <div class="col-md-6">
                 <label for="password" class="form-label">Contraseña</label>
-                <input type="password" name="password" id="password" class="form-control" required minlength="6">
+                <input type="password" name="password" id="password" class="form-control" >
             </div>
             <div class="col-md-6">
                 <label for="fecha" class="form-label">Fecha de registro</label>
-                <input type="datetime-local" name="fecha" id="fecha" class="form-control" required>
+                <input type="datetime-local" name="fecha" id="fecha" class="form-control" >
             </div>
         </div>
 
@@ -48,7 +48,7 @@
             </div>
             <div class="col-md-6">
                 <label for="documento" class="form-label">Documento (PDF)</label>
-                <input type="file" name="documento" id="documento" class="form-control" accept="application/pdf" required>
+                <input type="file" name="documento" id="documento" class="form-control" accept="application/pdf" >
             </div>
         </div>
 
@@ -84,8 +84,8 @@ $(document).ready(function () {
             },
             telefono: {
                 digits: true,
-                minlength: 7,
-                maxlength: 15
+                minlength: 10,
+                maxlength: 10
             },
             password: {
                 required: true,
@@ -117,8 +117,8 @@ $(document).ready(function () {
             },
             telefono: {
                 digits: "Solo números permitidos",
-                minlength: "Mínimo 7 dígitos",
-                maxlength: "Máximo 15 dígitos"
+                minlength: "Mínimo 10 dígitos",
+                maxlength: "Máximo 10 dígitos"
             },
             password: {
                 required: "La contraseña es obligatoria",
@@ -135,15 +135,21 @@ $(document).ready(function () {
                 extension: "Solo se permiten imágenes JPG, PNG, GIF"
             }
         },
-        errorClass: "text-danger",
-        errorElement: "small",
-        highlight: function (element) {
-            $(element).addClass("is-invalid");
-        },
-        unhighlight: function (element) {
-            $(element).removeClass("is-invalid");
-        }
+        
     });
+});
+</script>
+<script>
+document.getElementById('formTutor').addEventListener('submit', function(e) {
+    const nombre = document.getElementById('nombre').value.trim();
+
+    if (!nombre) {
+        e.preventDefault(); // Detiene el envío
+        alert('Por favor, llena los campos');
+        document.getElementById('nombre').focus();
+        return false;
+    }
+
 });
 </script>
 

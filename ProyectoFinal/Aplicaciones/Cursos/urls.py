@@ -1,10 +1,12 @@
 from django.urls import path
 from . import views
 urlpatterns = [
+    #path('crear-admin-por-defecto',views.crear_admin_por_defecto),
     #login
     # login y logout
     path('login', views.login_view, name='login'),
     path('logout', views.logout_view, name='logout'),
+    path('registro',views.registro),
     path('recuperar-contrasena', views.recuperar_contrasena, name='recuperar_contrasena'),
     #home
     path('', views.home),

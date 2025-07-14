@@ -8,7 +8,7 @@
             <h4><i class="fas fa-edit me-2"></i>Editar Asociación</h4>
         </div>
         <div class="card-body">
-            <form method="POST" action="/procesar-info-tutores-materias">
+            <form method="POST" action="/procesar-info-tutores-materias" id="formulario">
                 {% csrf_token %}
                 <input type="hidden" name="id" value="{{ tutor_materia.id }}">
                 
@@ -56,4 +56,45 @@
         </div>
     </div>
 </div>
+<script>
+$(document).ready(function () {
+  $('#formulario').validate({
+    rules: {
+      materia_id: {
+        required: true
+      },
+      nivel_id: {
+        required: true
+      },
+      precio_hora: {
+        required: true,
+        number: true,
+        min: 0,
+        max:50
+      }
+    },
+    messages: {
+      materia_id: {
+        required: "Seleccione una materia."
+      },
+      nivel_id: {
+        required: "Seleccione un nivel."
+      },
+      precio_hora: {
+        required: "Este campo es requerido ingrese el precio por hora.",
+        number: "Ingrese un número válido.",
+        min: "El precio no puede ser negativo.",
+        max:'El precio no puede superar los 50 dolares'
+      }
+    },
+    errorClass: "is-invalid",
+    validClass: "is-valid",
+    errorPlacement: function (error, element) {
+      error.addClass("invalid-feedback");
+      error.insertAfter(element);
+    }
+  });
+});
+</script>
+
 {% endblock %}

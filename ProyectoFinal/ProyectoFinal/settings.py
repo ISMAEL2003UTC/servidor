@@ -24,9 +24,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-og^5nacag8@8v+zu109e+7g*rdgknm!z9$rpb!nxp^7m#ibqsr'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -77,15 +77,10 @@ WSGI_APPLICATION = 'ProyectoFinal.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'bd_cursos',
-        'USER': 'postgres',
-        'PASSWORD': '12345678',
-        'HOST': 'localhost',  # o la IP si es otro servidor
-        'PORT': '5432',       # puerto por defecto de PostgreSQL
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'bd_cursos.sqlite3'),  # Archivo SQLite en la carpeta base del proyecto
     }
 }
-
 
 
 # Password validation

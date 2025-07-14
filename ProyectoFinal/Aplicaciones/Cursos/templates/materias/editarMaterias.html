@@ -11,7 +11,7 @@
         <div class="row mb-3">
             <div class="col-md-6">
                 <label for="nombre" class="form-label">Nombre</label>
-                <input type="text" name="nombre" id="nombre" value="{{materias.nombre}}" class="form-control" required>
+                <input type="text" name="nombre" id="nombre" value="{{materias.nombre}}" class="form-control" >
             </div>
             <div class="col-md-6">
                 <label for="descripcion" class="form-label">Descripcion</label>
@@ -104,14 +104,7 @@ $(document).ready(function () {
                 extension: "Solo se permiten imágenes JPG, PNG, GIF"
             }
         },
-        errorClass: "text-danger",
-        errorElement: "small",
-        highlight: function (element) {
-            $(element).addClass("is-invalid");
-        },
-        unhighlight: function (element) {
-            $(element).removeClass("is-invalid");
-        }
+        
     });
 });
 </script>

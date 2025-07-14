@@ -293,9 +293,9 @@
                   <a class="dropdown-toggle profile-pic" data-bs-toggle="dropdown" href="#" aria-expanded="false">
                     <div class="avatar-sm">
                       {% if request.session.usuario_id %}
-                        <img src="{{ request.session.logo_url }}" alt="Imagen De Perfil" class="avatar-img rounded" />
+                        <img src="{{ request.session.logo_url }}" alt="" class="avatar-img rounded" />
                       {% else %}
-                        <img src="{% static 'plantilla/kaiadmin/assets/img/profile.jpg' %}" alt="Imagen De Perfil" class="avatar-img rounded" />
+                        <img src="{% static 'plantilla/kaiadmin/assets/img/profile.jpg' %}" alt="" class="avatar-img rounded" />
                       {% endif %}
                     </div>
                     <span class="profile-username">

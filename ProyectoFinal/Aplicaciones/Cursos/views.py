@@ -1,13 +1,17 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.hashers import make_password
 from django.contrib import messages
 import os
 from django.db import IntegrityError
 from datetime import datetime
+from django.utils import timezone
 from django.contrib import messages
 from django.core.mail import send_mail
 from .models import Usuario, Tutor, Estudiante, Materia, Nivel, TutorMateria, Clase, Seguimiento, Pago, Valoracion, Ubicacion, MensajeClase
 
 #login
+from django.contrib.auth.hashers import make_password
+
 
 def login_view(request):
     if request.method == 'POST':
@@ -38,6 +42,49 @@ def login_view(request):
 
     return render(request, 'login.html')
 
+def registro(request):
+    if request.method == 'POST':
+        nombre = request.POST['nombre']
+        apellido = request.POST['apellido']
+        correo = request.POST['correo']
+        telefono = request.POST['telefono']
+        password = request.POST['password']
+        rol = request.POST['rol']  # 'estudiante' o 'tutor'
+
+        try:
+            # Verificar si el correo ya existe
+            if Usuario.objects.filter(correo=correo).exists():
+                messages.error(request, 'Este correo ya está registrado.')
+                return redirect('/registro')
+
+            # Crear el usuario
+            usuario = Usuario.objects.create(
+                nombre=nombre,
+                apellido=apellido,
+                correo=correo,
+                telefono=telefono,
+                password_hash=password,
+                fecha_registro=datetime.now().strftime('%Y-%m-%d'),
+                rol=rol
+            )
+
+            # Crear el perfil según el rol
+            if rol == 'tutor':
+                Tutor.objects.create(usuario=usuario)
+            elif rol == 'estudiante':
+                Estudiante.objects.create(usuario=usuario)
+            else:
+                rol == 'admin'
+                Usuario.objects.create(usuario=usuario)
+
+            messages.success(request, 'Registro exitoso. Por favor inicia sesión.')
+            return redirect('/login')
+
+        except Exception as e:
+            messages.error(request, f'Error en el registro: {str(e)}')
+            return redirect('/registro')
+
+    return render(request, 'registrar.html')
 
 def logout_view(request):
     request.session.flush()
@@ -54,7 +101,7 @@ def recuperar_contrasena(request):
             send_mail(
                 subject='Recuperación de contraseña',
                 message=f'Tu contraseña es: {usuario.password_hash}',
-                from_email='no-reply@educatec.com',
+                from_email='marlon.acosta9259@utc.edu.ec',
                 recipient_list=[correo],
                 fail_silently=False
             )
@@ -537,6 +584,7 @@ def seleccionar_materia(request):
 
 # Paso 2: Vista que muestra detalle para solicitar clase
 def detalle_solicitud_clase(request, materia_id):
+    
     materia = get_object_or_404(Materia, id=materia_id)
     
     # niveles y tutores disponibles para esa materia

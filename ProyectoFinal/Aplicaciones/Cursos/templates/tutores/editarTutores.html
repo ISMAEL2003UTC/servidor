@@ -11,22 +11,22 @@
         <div class="row mb-3">
             <div class="col-md-6">
                 <label for="nombre" class="form-label">Nombre</label>
-                <input type="text" name="nombre" value="{{usuarios.nombre}}" id="nombre" class="form-control" required>
+                <input type="text" name="nombre" value="{{usuarios.nombre}}" id="nombre" class="form-control" >
             </div>
             <div class="col-md-6">
                 <label for="apellido" class="form-label">Apellido</label>
-                <input type="text" name="apellido" value="{{usuarios.apellido}}" id="apellido" class="form-control" required>
+                <input type="text" name="apellido" value="{{usuarios.apellido}}" id="apellido" class="form-control" >
             </div>
         </div>
 
         <div class="row mb-3">
             <div class="col-md-6">
                 <label for="correo" class="form-label">Correo electrónico</label>
-                <input type="email" name="correo" value="{{usuarios.correo}}" id="correo" class="form-control" required>
+                <input type="email" name="correo" value="{{usuarios.correo}}" id="correo" class="form-control" >
             </div>
             <div class="col-md-6">
                 <label for="telefono" class="form-label">Teléfono</label>
-                <input type="text" name="telefono" value="{{usuarios.telefono}}" id="telefono" class="form-control" pattern="\d{7,15}" title="Debe contener entre 7 y 15 dígitos numéricos">
+                <input type="text" name="telefono" value="{{usuarios.telefono}}" id="telefono" class="form-control" pattern="\d{7,15}" >
             </div>
         </div>
 
@@ -34,13 +34,13 @@
             <div class="mb-3">
                 <label for="password" class="form-label">Contraseña:</label>
                 <div class="input-group">
-                    <input type="password" name="password" id="password" value="{{ usuarios.password_hash }}" class="form-control" required minlength="6">
+                    <input type="password" name="password" id="password" value="{{ usuarios.password_hash }}" class="form-control" >
                     <button class="btn btn-outline-secondary" type="button" onclick="mostrarOcultarPassword()">👁️</button>
                 </div>
             </div>
             <div class="col-md-6">
                 <label for="fecha" class="form-label">Fecha de registro</label >
-                <input type="datetime-local" name="fecha" id="fecha" value="{{ usuarios.fecha_registro|date:'Y-m-d\\TH:i' }}" class="form-control" required>
+                <input type="datetime-local" name="fecha" id="fecha" value="{{ usuarios.fecha_registro|date:'Y-m-d\\TH:i' }}" class="form-control" >
             </div>
         </div>
 
@@ -160,14 +160,7 @@ $(document).ready(function () {
                 extension: "Solo se permiten imágenes JPG, PNG, GIF"
             }
         },
-        errorClass: "text-danger",
-        errorElement: "small",
-        highlight: function (element) {
-            $(element).addClass("is-invalid");
-        },
-        unhighlight: function (element) {
-            $(element).removeClass("is-invalid");
-        }
+        
     });
 });
 </script>

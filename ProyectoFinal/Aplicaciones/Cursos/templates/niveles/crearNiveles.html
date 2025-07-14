@@ -11,7 +11,7 @@
         <div class="row mb-3">
             <div class="col-md-6">
                 <label for="nombre" class="form-label">Nombre</label>
-                <input type="text" name="nombre" id="nombre" class="form-control" required>
+                <input type="text" name="nombre" id="nombre" class="form-control" >
             </div>
             <div class="col-md-6">
                 <label for="descripcion" class="form-label">Descripcion</label>
@@ -43,7 +43,7 @@ $(document).ready(function () {
             },
             descripcion: {
                 required: true,
-                minlength: 30
+                minlength: 10
             }
            
             
@@ -55,19 +55,25 @@ $(document).ready(function () {
             },
             descripcion: {
                 required: "Por favor ingresa la descripcion",
-                minlength: "Mínimo 30 caracteres"
+                minlength: "Mínimo 10 caracteres"
             }
         },
-        errorClass: "text-danger",
-        errorElement: "small",
-        highlight: function (element) {
-            $(element).addClass("is-invalid");
-        },
-        unhighlight: function (element) {
-            $(element).removeClass("is-invalid");
-        }
+        
     });
 });
 </script>
+<script>
+document.getElementById('formTutor').addEventListener('submit', function(e) {
+    const nombre = document.getElementById('nombre').value.trim();
+
+    if (!nombre ) {
+        e.preventDefault(); // Detiene el envío del formulario
+        alert('Llena los datos');
+        document.getElementById('nombre').focus();
+        return false;
+    }
+});
+</script>
+
 
 {% endblock %}
